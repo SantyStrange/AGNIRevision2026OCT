@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>RRB CBT AGNI Current Affairs</title>
+<style>
+    :root {
+        --bg-color: #121212;
+        --surface-color: #1e1e1e;
+        --primary-cyan: #369BFF;
+        --primary-blue: #2979ff;
+        --text-primary: #ffffff;
+        --text-secondary: #b3b3b3;
+        --border-color: #333333;
+        
+        --color-not-visited: #9e9e9e;
+        --color-not-answered: #f44336;
+        --color-answered: #4caf50;
+        --color-marked: #9c27b0;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    
+    /* 100dvh prevents mobile browser URL bars from hiding the bottom elements */
+    body { background-color: var(--bg-color); color: var(--text-primary); height: 100vh; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
+    
+    /* Views */
+    .view { display: none; flex-direction: column; height: 100%; overflow: hidden; }
+    .view.active { display: flex; }
+    
+    /* Landing Page */
+    .landing-container { max-width: 800px; margin: auto; padding: 40px 20px; text-align: center; overflow-y: auto; }
+    .landing-container h1 { color: var(--primary-cyan); font-size: 2rem; margin-bottom: 20px; }
+    .instructions { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 10px; padding: 25px; text-align: left; margin-bottom: 30px; line-height: 1.6; }
+    .instructions h3 { color: var(--primary-cyan); margin-bottom: 15px; }
+    .instructions ul { margin-left: 20px; }
+    .start-btn { background: var(--primary-blue); color: #fff; border: none; padding: 15px 30px; font-size: 1.2rem; font-weight: bold; border-radius: 5px; cursor: pointer; transition: 0.2s; text-transform: uppercase; }
+    .start-btn:hover { background: #1565c0; transform: scale(1.05); }
+
+    /* Header */
+    .header { background-color: var(--surface-color); border-bottom: 2px solid var(--primary-cyan); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; z-index: 50; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+    .header h1 { font-size: 1.2rem; font-weight: 600; color: var(--primary-cyan); }
+    .timer-container { font-size: 1.2rem; font-weight: bold; background: #2a2a2a; padding: 5px 15px; border-radius: 5px; border: 1px solid var(--primary-blue); }
+    
+    /* Mobile Top Bar (Toggle Palette & Submit) */
+    .mobile-top-bar { display: none; width: 100%; flex-shrink: 0; z-index: 40; border-bottom: 1px solid var(--border-color); }
+    .mobile-top-bar button { flex: 1; padding: 12px; border: none; font-weight: bold; font-size: 0.95rem; cursor: pointer; text-transform: uppercase; }
+    .btn-toggle-top { background: #2a2a2a; color: var(--primary-cyan); border-right: 1px solid var(--border-color) !important; }
+    .btn-submit-top { background: var(--color-answered); color: #fff; }
+
+    /* Main Layout */
+    .main-container { display: flex; flex: 1; overflow: hidden; position: relative; }
+    
+    /* Quiz Left Panel */
+    .quiz-left-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    
+    /* Question Scrolling Area */
+    .question-scroll-area { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 40px; }
+    .q-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: bold; font-size: 1.1rem; color: var(--primary-cyan); border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+    .question-text { font-size: 1.1rem; line-height: 1.6; margin-bottom: 15px; }
+    .question-tamil { font-size: 1.1rem; line-height: 1.6; color: var(--primary-cyan); margin-bottom: 25px; }
+    
+    .options-list { display: flex; flex-direction: column; gap: 12px; }
+    .option-label { display: flex; align-items: center; padding: 12px 15px; background: #2a2a2a; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: 0.2s; }
+    .option-label:hover { border-color: var(--primary-cyan); background: #333; }
+    .option-label input { margin-right: 15px; transform: scale(1.2); accent-color: var(--primary-cyan); }
+    
+    /* Pinned Action Buttons Footer */
+    .action-buttons { flex-shrink: 0; display: flex; flex-wrap: wrap; gap: 10px; padding: 15px 20px; background: var(--surface-color); border-top: 1px solid var(--border-color); z-index: 10; box-shadow: 0 -4px 10px rgba(0,0,0,0.3); }
+    .btn { padding: 10px 15px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.2s; color: #fff; text-transform: uppercase; font-size: 0.85rem; display: flex; justify-content: center; align-items: center; text-align: center; }
+    .btn-prev { background: #424242; }
+    .btn-prev:hover { background: #616161; }
+    .btn-clear { background: #f44336; }
+    .btn-clear:hover { background: #d32f2f; }
+    .btn-mark { background: var(--color-marked); }
+    .btn-mark:hover { background: #7b1fa2; }
+    .btn-save { background: var(--primary-blue); margin-left: auto; }
+    .btn-save:hover { background: #1565c0; }
+
+    /* Palette Section */
+    .palette-section { width: 320px; background: var(--surface-color); border-left: 1px solid var(--border-color); display: flex; flex-direction: column; transition: transform 0.3s ease; flex-shrink: 0; }
+    .palette-header { padding: 15px; border-bottom: 1px solid var(--border-color); font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+    .palette-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 15px; overflow-y: auto; }
+    .q-bubble { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.9rem; color: #fff; background: var(--color-not-visited); border: 2px solid transparent; }
+    .q-bubble.active { border-color: var(--primary-cyan); transform: scale(1.1); box-shadow: 0 0 8px var(--primary-cyan); }
+    
+    .status-0 { background: var(--color-not-visited); color: #000; } 
+    .status-1 { background: var(--color-not-answered); } 
+    .status-2 { background: var(--color-answered); } 
+    .status-3 { background: var(--color-marked); } 
+    .status-4 { background: var(--color-marked); position: relative; } 
+    .status-4::after { content: ''; position: absolute; bottom: 2px; right: 2px; width: 8px; height: 8px; background: var(--color-answered); border-radius: 50%; border: 1px solid #fff; }
+
+    .legend { padding: 15px; font-size: 0.8rem; border-top: 1px solid var(--border-color); display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .legend-item { display: flex; align-items: center; gap: 5px; }
+    .legend-box { width: 15px; height: 15px; border-radius: 3px; }
+    .btn-submit-desktop { background: var(--color-answered); width: 100%; padding: 12px; }
+
+    /* Custom Modals (No native alerts) */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
+    .modal-content { background: var(--surface-color); padding: 30px; border-radius: 10px; width: 100%; max-width: 500px; border: 1px solid var(--border-color); text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+    .modal-content h2 { color: var(--primary-cyan); margin-bottom: 20px; }
+    .modal-actions { display: flex; justify-content: center; gap: 15px; margin-top: 25px; }
+    
+    /* Results View */
+    .results-container { max-width: 900px; margin: auto; padding: 40px 20px; text-align: center; overflow-y: auto; width: 100%; }
+    .result-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 30px 0; }
+    .stat-box { background: #2a2a2a; padding: 20px; border-radius: 8px; border-bottom: 4px solid #666; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .stat-box.st-score { border-color: var(--primary-cyan); grid-column: span 2; }
+    .stat-box.st-correct { border-color: var(--color-answered); }
+    .stat-box.st-wrong { border-color: var(--color-not-answered); }
+    .stat-box h3 { font-size: 2.5rem; margin-bottom: 5px; }
+    .stat-box.st-score h3 { font-size: 3.5rem; color: var(--primary-cyan); }
+    
+    /* Tabbed Review Section */
+    #detailed-review-section { display: none; margin-top: 40px; }
+    .review-tabs { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; flex-wrap: wrap; }
+    .tab-btn { background: #2a2a2a; border: 1px solid var(--border-color); color: var(--text-secondary); padding: 12px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; flex: 1; min-width: 110px; text-align: center; transition: 0.2s; }
+    .tab-btn:hover { background: #333; }
+    .tab-btn.active { color: #fff; border-bottom: 3px solid; }
+    .tab-btn[data-tab="correct"].active { border-color: var(--color-answered); background: rgba(76, 175, 80, 0.1); }
+    .tab-btn[data-tab="wrong"].active { border-color: var(--color-not-answered); background: rgba(244, 67, 54, 0.1); }
+    .tab-btn[data-tab="unattempted"].active { border-color: var(--color-not-visited); background: rgba(158, 158, 158, 0.1); }
+    
+    .tab-content { display: none; text-align: left; }
+    .tab-content.active { display: block; }
+    
+    .review-item { padding: 20px; background: #2a2a2a; margin-bottom: 15px; border-radius: 8px; border-left: 5px solid var(--border-color); }
+    .review-item.correct { border-left-color: var(--color-answered); }
+    .review-item.wrong { border-left-color: var(--color-not-answered); }
+    .review-item.unattempted { border-left-color: var(--color-not-visited); }
+    
+    .answer-tag { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; margin-top: 10px; }
+    .tag-correct { background: rgba(76, 175, 80, 0.2); color: #81c784; border: 1px solid #4caf50; }
+    .tag-wrong { background: rgba(244, 67, 54, 0.2); color: #e57373; border: 1px solid #f44336; }
+    .tag-unattempted { background: rgba(158, 158, 158, 0.2); color: #e0e0e0; border: 1px solid #9e9e9e; }
+    
+    .explanation-box { margin-top: 12px; padding: 12px; background: #1e1e1e; border-radius: 5px; border-left: 3px solid var(--primary-cyan); font-size: 0.95rem; line-height: 1.5; color: #ddd; }
+
+    /* MOBILE SPECIFIC OVERRIDES */
+    @media (max-width: 768px) {
+        .mobile-top-bar { display: flex; }
+        .palette-section { position: absolute; top: 0; right: 0; height: 100%; transform: translateX(100%); z-index: 100; box-shadow: -5px 0 15px rgba(0,0,0,0.5); }
+        .palette-section.open { transform: translateX(0); }
+        
+        .result-grid { grid-template-columns: 1fr; }
+        .stat-box.st-score { grid-column: span 1; }
+        
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            padding: 10px;
+            padding-bottom: max(10px, env(safe-area-inset-bottom));
+        }
+        .btn-save { grid-column: span 2; margin-left: 0; padding: 15px; font-size: 1.1rem; order: 1; }
+        .btn-mark { order: 2; padding: 12px; }
+        .btn-clear { order: 3; padding: 12px; }
+        .btn-prev { grid-column: span 2; order: 4; padding: 12px; }
+    }
+</style>
+</head>
+<body>
+
+<!-- VIEW 1: Landing Page -->
+<div id="view-landing" class="view active">
+    <div class="landing-container">
+        <h1>RRB CBT: AGNI OCT</h1>
+        <div class="instructions">
+            <h3>📝 Instructions:</h3>
+            <ul>
+                <li><strong>Total Questions:</strong> 100 (Bilingual: English & Tamil).</li>
+                <li><strong>Time Allotted:</strong> 30 Minutes.</li>
+                <li><strong>Marking Scheme:</strong> +1 mark for correct answers, <strong>-0.33 marks</strong> for incorrect answers.</li>
+                <li>Questions are shuffled automatically for every attempt.</li>
+                <li>Use the Question Palette to navigate. You can Mark questions for review.</li>
+                <li>Ensure you have a stable connection. Do not refresh the page during the exam.</li>
+            </ul>
+        </div>
+        <button class="start-btn" onclick="startQuiz()">I am ready to begin</button>
+    </div>
+</div>
+
+<!-- VIEW 2: Main Quiz -->
+<div id="view-quiz" class="view">
+    
+    <div class="header">
+        <h1>CA AGNI OCT - 2026</h1>
+        <div class="timer-container" id="timer">30:00</div>
+    </div>
+
+    <!-- Mobile Explicit Top Bar -->
+    <div class="mobile-top-bar">
+        <button class="btn-toggle-top" onclick="togglePalette()">☰ Question Palette</button>
+        <button class="btn-submit-top" onclick="showSubmitConfirm()">Submit Exam</button>
+    </div>
+
+    <div class="main-container">
+        
+        <!-- Question Panel (Scrollable content + Fixed Footer) -->
+        <div class="quiz-left-panel">
+            
+            <div class="question-scroll-area">
+                <div class="q-header">
+                    <span id="q-no">Question 1</span>
+                    <span style="color: var(--text-secondary); font-size: 0.9rem;">Negative Marks: -0.33</span>
+                </div>
+                
+                <div class="question-text" id="q-text-en">Loading...</div>
+                <div class="question-tamil" id="q-text-ta">ஏற்றுகிறது...</div>
+                
+                <div class="options-list" id="options-container"></div>
+            </div>
+            
+            <!-- Fixed Action Buttons Footer -->
+            <div class="action-buttons">
+                <button class="btn btn-save" onclick="saveAndNext()">Save & Next ►</button>
+                <button class="btn btn-mark" onclick="markAndNext()">Mark & Next</button>
+                <button class="btn btn-clear" onclick="clearResponse()">Clear</button>
+                <button class="btn btn-prev" onclick="prevQuestion()">◄ Previous</button>
+            </div>
+            
+        </div>
+        
+        <!-- Collapsible Palette -->
+        <div class="palette-section" id="palette">
+            <div class="palette-header">
+                <span>Question Palette</span>
+                <button onclick="togglePalette()" class="btn btn-prev" style="padding: 5px; display: none;" id="close-palette-btn">X</button>
+            </div>
+            <div class="palette-grid" id="palette-grid"></div>
+            <div class="legend">
+                <div class="legend-item"><div class="legend-box status-2"></div> Answered</div>
+                <div class="legend-item"><div class="legend-box status-1"></div> Not Answered</div>
+                <div class="legend-item"><div class="legend-box status-0"></div> Not Visited</div>
+                <div class="legend-item"><div class="legend-box status-3"></div> Marked</div>
+                <div class="legend-item"><div class="legend-box status-4"></div> Ans & Marked</div>
+            </div>
+            <div style="padding: 15px;">
+                <button class="btn btn-submit btn-submit-desktop" onclick="showSubmitConfirm()">SUBMIT EXAM</button>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<!-- Custom Confirmation Modal -->
+<div class="modal-overlay" id="confirm-modal">
+    <div class="modal-content">
+        <h2>Submit Exam?</h2>
+        <p>Are you sure you want to submit? You will not be able to change your answers.</p>
+        <p id="unanswered-warning" style="color: var(--color-not-answered); margin-top: 10px; font-weight: bold; display: none;"></p>
+        <div class="modal-actions">
+            <button class="btn btn-prev" onclick="closeSubmitConfirm()">No, Go Back</button>
+            <button class="btn btn-submit" style="width: auto; margin-top: 0; padding: 10px 20px;" onclick="submitExam()">Yes, Submit</button>
+        </div>
+    </div>
+</div>
+
+<!-- VIEW 3: Results & Review -->
+<div id="view-results" class="view">
+    <div class="results-container">
+        <h1 style="color: var(--primary-cyan); font-size: 2.2rem; margin-bottom: 20px;">Exam Submitted Successfully</h1>
+        
+        <div class="result-grid">
+            <div class="stat-box st-score">
+                <div>Final Score</div>
+                <h3 id="res-score">0.00</h3>
+                <div style="color: var(--text-secondary); font-size: 0.9rem;" id="out-of-text">(Out of 100)</div>
+            </div>
+            <div class="stat-box st-correct">
+                <h3 id="res-correct">0</h3>
+                <div>Correct</div>
+            </div>
+            <div class="stat-box st-wrong">
+                <h3 id="res-wrong">0</h3>
+                <div>Incorrect</div>
+            </div>
+        </div>
+        
+        <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 25px;">Unattempted Questions: <strong id="res-unattempted" style="color: #fff;">0</strong></p>
+        
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;" id="post-exam-actions">
+            <button class="btn btn-save" onclick="showDetailedReview()">View Detailed Review</button>
+            <button class="btn btn-prev" onclick="location.reload()">Restart Quiz</button>
+        </div>
+        
+        <!-- 3-Section Tabbed Review -->
+        <div id="detailed-review-section">
+            <h2 style="margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">Test Review</h2>
+            
+            <div class="review-tabs">
+                <button class="tab-btn" data-tab="correct" onclick="switchTab('correct')">Correct (<span id="tab-count-correct">0</span>)</button>
+                <button class="tab-btn" data-tab="wrong" onclick="switchTab('wrong')">Incorrect (<span id="tab-count-wrong">0</span>)</button>
+                <button class="tab-btn" data-tab="unattempted" onclick="switchTab('unattempted')">Unattempted (<span id="tab-count-unattempted">0</span>)</button>
+            </div>
+            
+            <div id="review-content-correct" class="tab-content"></div>
+            <div id="review-content-wrong" class="tab-content"></div>
+            <div id="review-content-unattempted" class="tab-content"></div>
+        </div>
+        
+    </div>
+</div>
+
+<script>
+
+const baseQuizData = [
+    // ================= 40 NATIONAL, STATE & INTERNATIONAL MCQS (Q1 - Q40) =================
+    // 1 (a: 1)
+    {
+        qE: "Which organisation launched 'PACT' (Platform for Aggregating Clean Transport) at the 5th e-FAST India Summit in New Delhi?",
+        qT: "புதுடெல்லியில் நடைபெற்ற 5வது e-FAST இந்தியா உச்சிமாநாட்டில் 'PACT' தளத்தைத் தொடங்கிய அமைப்பு எது?",
+        oE: ["Ministry of Road Transport", "NITI Aayog", "Bureau of Energy Efficiency", "NHAI"],
+        oT: ["சாலைப் போக்குவரத்து அமைச்சகம்", "நிதி ஆயோக்", "ஆற்றல் திறன் பணியகம்", "தேசிய நெடுஞ்சாலை ஆணையம்"],
+        a: 1,
+        exp: "NITI Aayog launched PACT (Platform for Aggregating Clean Transport) under e-FAST India on 7 September 2026 to accelerate zero-emission freight vehicles."
+    },
+    // 2 (a: 3)
+    {
+        qE: "What is the total financial outlay approved by the Union Cabinet for 'Semicon 2.0'?",
+        qT: "'செமிகான் 2.0' திட்டத்திற்கு மத்திய அமைச்சரவை அங்கீகரித்த மொத்த நிதி ஒதுக்கீடு எவ்வளவு?",
+        oE: ["₹76,000 crore", "₹95,000 crore", "₹1,10,000 crore", "₹1,27,500 crore"],
+        oT: ["₹76,000 கோடி", "₹95,000 கோடி", "₹1,10,000 கோடி", "₹1,27,500 கோடி"],
+        a: 3,
+        exp: "Approved on 15 July 2026, Semicon 2.0 has an outlay of ₹1,27,500 crore across six pillars to build a globally competitive semiconductor ecosystem."
+    },
+    // 3 (a: 0)
+    {
+        qE: "Who was appointed as the Chairperson of the reconstituted 18-member Central Board of Film Certification (CBFC) in September 2026?",
+        qT: "செப்டம்பர் 2026-இல் மறுசீரமைக்கப்பட்ட 18 உறுப்பினர்கள் கொண்ட மத்திய திரைப்படத் தணிக்கை வாரியத்தின் தலைவராக நியமிக்கப்பட்டவர் யார்?",
+        oE: ["Shashi Shekhar Vempati", "Prasoon Joshi", "Pahlaj Nihalani", "Anupam Kher"],
+        oT: ["சஷி சேகர் வெம்பட்டி", "பிரசூன் ஜோஷி", "பஹ்லாஜ் நிஹலானி", "அனுபம் கெர்"],
+        a: 0,
+        exp: "The Ministry of Information & Broadcasting reconstituted the CBFC on 16 September 2026 with Shashi Shekhar Vempati as Chairperson for a 3-year tenure."
+    },
+    // 4 (a: 2)
+    {
+        qE: "Under the Passports (Amendment) Rules, 2026, what is the validity of an ordinary 36-page passport issued to a minor below 15 years of age?",
+        qT: "கடவுச்சீட்டு திருத்த விதிகள் 2026-இன் கீழ், 15 வயதுக்குட்பட்ட சிறாருக்கு வழங்கப்படும் 36 பக்க சாதாரண கடவுச்சீட்டின் செல்லுபடியாகும் காலம் என்ன?",
+        oE: ["3 years or until age 15", "10 years from issue", "5 years or until age 18, whichever is earlier", "7 years or until age 18"],
+        oT: ["3 ஆண்டுகள் அல்லது 15 வயது வரை", "வழங்கப்பட்டதிலிருந்து 10 ஆண்டுகள்", "5 ஆண்டுகள் அல்லது 18 வயது வரை, எது முன்னதோ அது", "7 ஆண்டுகள் அல்லது 18 வயது வரை"],
+        a: 2,
+        exp: "Notified by the MEA under Section 24 of the Passports Act, 1967, a minor's passport is valid for 5 years from issue or until age 18, whichever is earlier."
+    },
+    // 5 (a: 2)
+    {
+        qE: "Which agency conducted 'Operation Deep Manifest', seizing over 362 metric tonnes of Pakistan-origin dry dates routed via the UAE?",
+        qT: "ஐக்கிய அரபு அமீரகம் வழியாகக் கடத்தப்பட்ட 362 மெட்ரிக் டன்னுக்கும் அதிகமான பாகிஸ்தான் பேரீச்சம்பழங்களைப் பறிமுதல் செய்த 'ஆபரேஷன் டீப் மேனிஃபெஸ்ட்' நடவடிக்கையை நடத்திய அமைப்பு எது?",
+        oE: ["Enforcement Directorate", "Central Bureau of Investigation", "Directorate of Revenue Intelligence", "Narcotics Control Bureau"],
+        oT: ["அமலாக்கத் துறை", "மத்திய புலனாய்வுப் பிரிவு", "வருவாய் புலனாய்வு இயக்குநரகம்", "போதைப்பொருள் கட்டுப்பாட்டுப் பணியகம்"],
+        a: 2,
+        exp: "The Directorate of Revenue Intelligence (DRI) intercepted 13 containers at CFS Ambad, Nashik under Operation Deep Manifest."
+    },
+    // 6 (a: 0)
+    {
+        qE: "Which two nations were the Partner Countries for the 9th India International Water Week 2026 held in New Delhi?",
+        qT: "புதுடெல்லியில் நடைபெற்ற 9வது இந்திய சர்வதேச நீர் வாரம் 2026-இன் பங்குதாரர் நாடுகள் எவை?",
+        oE: ["Netherlands and Germany", "Japan and Israel", "France and Australia", "Denmark and Norway"],
+        oT: ["நெதர்லாந்து மற்றும் ஜெர்மனி", "ஜப்பான் மற்றும் இஸ்ரேல்", "பிரான்ஸ் மற்றும் ஆஸ்திரேலியா", "டென்மார்க் மற்றும் நார்வே"],
+        a: 0,
+        exp: "Inaugurated by Vice-President C. P. Radhakrishnan at Bharat Mandapam, the 9th India International Water Week had Netherlands and Germany as Partner Countries."
+    },
+    // 7 (a: 3)
+    {
+        qE: "Among the four ports designated as 'Mega Ports' under Section 73 of the Indian Ports Act, 2025, which is the only one located on India's eastern coast?",
+        qT: "இந்திய துறைமுகங்கள் சட்டம் 2025-இன் பிரிவு 73-இன் கீழ் 'மெகா துறைமுகங்களாக' அறிவிக்கப்பட்ட நான்கில், இந்தியாவின் கிழக்குக் கடற்கரையில் அமைந்துள்ள ஒரே துறைமுகம் எது?",
+        oE: ["Deendayal Port", "Jawaharlal Nehru Port", "Mundra Port", "Paradip Port"],
+        oT: ["தீனதயாள் துறைமுகம்", "ஜவஹர்லால் நேரு துறைமுகம்", "முந்த்ரா துறைமுகம்", "பாரதீப் துறைமுகம்"],
+        a: 3,
+        exp: "The four designated Mega Ports are Deendayal (Kandla), Jawaharlal Nehru (Nhava Sheva), Mundra, and Paradip (Odisha)—with Paradip being the only one on the east coast."
+    },
+    // 8 (a: 1)
+    {
+        qE: "How many traditional trades are covered under the PM Vishwakarma Scheme, which recently completed 3 years with 30 lakh registrations?",
+        qT: "30 லட்சம் பதிவுகளுடன் சமீபத்தில் 3 ஆண்டுகளை நிறைவு செய்த பிஎம் விஸ்வகர்மா திட்டத்தின் கீழ் எத்தனை பாரம்பரியத் தொழில்கள் உள்ளடக்கப்பட்டுள்ளன?",
+        oE: ["12 trades", "18 trades", "24 trades", "30 trades"],
+        oT: ["12 தொழில்கள்", "18 தொழில்கள்", "24 தொழில்கள்", "30 தொழில்கள்"],
+        a: 1,
+        exp: "Launched on 17 September 2023 under the Ministry of MSME with an outlay of ₹13,000 crore, PM Vishwakarma covers 18 traditional trades."
+    },
+    // 9 (a: 0)
+    {
+        qE: "Which district in Arunachal Pradesh plans to become India's first 'Bio-Happy District'?",
+        qT: "அருணாச்சலப் பிரதேசத்தின் எந்த மாவட்டம் இந்தியாவின் முதல் 'பயோ-ஹேப்பி மாவட்டமாக' மாறத் திட்டமிட்டுள்ளது?",
+        oE: ["Keyi Panyor", "Tawang", "Dibang Valley", "Ziro"],
+        oT: ["கெயி பன்யோர்", "தவாங்", "திபாங் பள்ளத்தாக்கு", "ஜிரோ"],
+        a: 0,
+        exp: "Keyi Panyor district aims to become India's first Bio-Happy District, inspired by agricultural scientist M. S. Swaminathan's concept of Biohappiness."
+    },
+    // 10 (a: 2)
+    {
+        qE: "Where was the 7th Global Fintech Fest (GFF) 2026 inaugurated by Prime Minister Narendra Modi?",
+        qT: "பிரதமர் நரேந்திர மோடியால் 7வது உலகளாவிய ஃபின்டெக் திருவிழா 2026 எங்கு தொடங்கி வைக்கப்பட்டது?",
+        oE: ["New Delhi", "Bengaluru", "Mumbai", "Gandhinagar"],
+        oT: ["புதுடெல்லி", "பெங்களூரு", "மும்பை", "காந்திநகர்"],
+        a: 2,
+        exp: "The 7th Global Fintech Fest 2026 was held from 8–11 September 2026 in Mumbai, organised by PCI, NPCI, and FCC."
+    },
+    // 11 (a: 1)
+    {
+        qE: "Which state's traditional double-headed folk percussion instrument 'Mandar' recently received a GI tag?",
+        qT: "எந்த மாநிலத்தின் பாரம்பரிய இரட்டைத் தலை நாட்டுப்புறத் தாள வாத்தியமான 'மந்தார்' சமீபத்தில் புவிசார் குறியீடு பெற்றது?",
+        oE: ["Chhattisgarh", "Jharkhand", "Odisha", "Bihar"],
+        oT: ["சத்தீஸ்கர்", "ஜார்க்கண்ட்", "ஒடிசா", "பீகார்"],
+        a: 1,
+        exp: "Mandar of Jharkhand, traditionally crafted using clay and leather and associated with Gumla and tribal communities, received the GI tag."
+    },
+    // 12 (a: 3)
+    {
+        qE: "In which state is the traditional boat-race festival 'Heikru Hidongba' celebrated annually?",
+        qT: "'ஹெய்க்ரு ஹிடோங்பா' என்ற பாரம்பரிய படகுப் போட்டித் திருவிழா ஆண்டுதோறும் எந்த மாநிலத்தில் கொண்டாடப்படுகிறது?",
+        oE: ["Assam", "Kerala", "Nagaland", "Manipur"],
+        oT: ["அசாம்", "கேரளா", "நாகாலாந்து", "மணிப்பூர்"],
+        a: 3,
+        exp: "Heikru Hidongba is a traditional Meitei boat-race festival celebrated at the Bijoy Govinda moat in Imphal, Manipur."
+    },
+    // 13 (a: 3)
+    {
+        qE: "Which village in Zanskar was declared Ladakh's first Heritage Village in September 2026?",
+        qT: "செப்டம்பர் 2026-இல் சன்ஸ்காரில் உள்ள எந்தக் கிராமம் லடாக்கின் முதல் பாரம்பரியக் கிராமமாக அறிவிக்கப்பட்டது?",
+        oE: ["Drass", "Choglamsar", "Stakna", "Kumik"],
+        oT: ["திராஸ்", "சோக்லம்சார்", "ஸ்டக்னா", "குமிக்"],
+        a: 3,
+        exp: "Ladakh LG Vinai Kumar Saxena declared Kumik in Zanskar as Ladakh's first Heritage Village during the Ladakh Zanskar Festival 2026."
+    },
+    // 14 (a: 1)
+    {
+        qE: "In which two coastal districts did the Karnataka Cabinet approve Tulu as the second additional administrative language?",
+        qT: "கர்நாடக அமைச்சரவை எந்த இரு கடலோர மாவட்டங்களில் துளு மொழியை இரண்டாவது கூடுதல் நிர்வாக மொழியாக அங்கீகரித்தது?",
+        oE: ["Uttara Kannada and Belagavi", "Dakshina Kannada and Udupi", "Mysuru and Kodagu", "Bidar and Kalaburagi"],
+        oT: ["உத்தர கன்னடா மற்றும் பெலகாவி", "தட்சிண கன்னடா மற்றும் உடுப்பி", "மைசூரு மற்றும் குடகு", "பீதர் மற்றும் கலபுரகி"],
+        a: 1,
+        exp: "Following the Dr. M. Mohan Alva committee's recommendations, Karnataka approved Tulu as an additional administrative language in Dakshina Kannada and Udupi."
+    },
+    // 15 (a: 2)
+    {
+        qE: "Where was the foundation stone laid for India's first port-based e-methanol production plant with a 150 TPD capacity?",
+        qT: "தினசரி 150 டன் உற்பத்தித் திறன் கொண்ட இந்தியாவின் முதல் துறைமுகம் சார்ந்த இ-மெத்தனால் ஆலைக்கு எங்கு அடிக்கல் நாட்டப்பட்டது?",
+        oE: ["Paradip Port, Odisha", "Kochi Port, Kerala", "Deendayal Port, Kandla", "Visakhapatnam Port, Andhra Pradesh"],
+        oT: ["பாரதீப் துறைமுகம், ஒடிசா", "கொச்சி துறைமுகம், கேரளா", "தீனதயாள் துறைமுகம், காண்ட்லா", "விசாகப்பட்டினம் துறைமுகம், ஆந்திரப் பிரதேசம்"],
+        a: 2,
+        exp: "Deendayal Port Authority (Kandla, Gujarat) and Assam Petro-Chemicals Ltd. are jointly setting up India's first port-based e-methanol plant with a ₹2,300 crore investment."
+    },
+    // 16 (a: 0)
+    {
+        qE: "On which river is the 422 MW Kishau Multipurpose Project proposed to be built along the Himachal Pradesh-Uttarakhand border?",
+        qT: "இமாச்சலப் பிரதேசம்-உத்தரகாண்ட் எல்லையில் 422 மெகாவாட் திறன் கொண்ட கிஷாவ் பல்நோக்குத் திட்டம் எந்த ஆற்றின் குறுக்கே கட்டப்படவுள்ளது?",
+        oE: ["Tons River", "Giri River", "Alaknanda River", "Sutlej River"],
+        oT: ["டோன்ஸ் ஆறு", "கிரி ஆறு", "அளகநந்தா ஆறு", "சட்லஜ் ஆறு"],
+        a: 0,
+        exp: "The Kishau Multipurpose Project is located on the Tons River, a major tributary of the Yamuna, involving six states/UTs."
+    },
+    // 17 (a: 1)
+    {
+        qE: "Which district became the first and only district in Mizoram to achieve 'Surakshit' HIV status by meeting all three 95-95-95 targets?",
+        qT: "மூன்று 95-95-95 இலக்குகளையும் எட்டி 'சுரக்ஷித்' எச்ஐவி அந்தஸ்தைப் பெற்ற மிசோராமின் முதல் மற்றும் ஒரே மாவட்டம் எது?",
+        oE: ["Khawzawl", "Saitual", "Lawngtlai", "Aizawl"],
+        oT: ["காவ்சால்", "சைதுவால்", "லாங்ட்லாய்", "ஐஸ்வால்"],
+        a: 1,
+        exp: "Saitual district in Mizoram achieved 'Surakshit' HIV status under NACO's Mobilisation AIDS Suraksha (MAS) campaign."
+    },
+    // 18 (a: 0)
+    {
+        qE: "Which state government launched the 'Pehchaan' portal to help families identify unclaimed and unidentified deceased persons?",
+        qT: "உரிமை கோரப்படாத மற்றும் அடையாளம் தெரியாத சடலங்களைக் குடும்பத்தினர் அடையாளம் காண உதவும் 'பெஹ்சான்' இணையதளத்தைத் தொடங்கிய மாநில அரசு எது?",
+        oE: ["Punjab", "Haryana", "Uttar Pradesh", "Rajasthan"],
+        oT: ["பஞ்சாப்", "ஹரியானா", "உத்தரப் பிரதேசம்", "ராஜஸ்தான்"],
+        a: 0,
+        exp: "The Punjab Government launched the statewide 'Pehchaan' digital portal requiring mortuary details to be uploaded within 48 hours of post-mortem."
+    },
+    // 19 (a: 3)
+    {
+        qE: "In which city of Madhya Pradesh is Asia's first Telecom Manufacturing Zone (TMZ) proposed to be developed?",
+        qT: "மத்தியப் பிரதேசத்தின் எந்த நகரத்தில் ஆசியாவின் முதல் தொலைத்தொடர்பு உற்பத்தி மண்டலம் அமைக்கப்படவுள்ளது?",
+        oE: ["Indore", "Bhopal", "Shivpuri", "Gwalior"],
+        oT: ["இந்தூர்", "போபால்", "சிவபுரி", "குவாலியர்"],
+        a: 3,
+        exp: "Asia's first Telecom Manufacturing Zone is proposed at SADA in Gwalior, Madhya Pradesh, with an investment of around ₹5,500 crore."
+    },
+    // 20 (a: 2)
+    {
+        qE: "Between which two stations was India's first LNG-diesel dual-fuel DEMU train launched on 27 September 2026?",
+        qT: "செப்டம்பர் 27, 2026 அன்று இந்தியாவின் முதல் எல்என்ஜி-டீசல் இரட்டை எரிபொருள் டெமு ரயில் எந்த இரு நிலையங்களுக்கு இடையே தொடங்கப்பட்டது?",
+        oE: ["Ahmedabad and Vadodara", "Surat and Bharuch", "Sabarmati and Mahesana Junction", "Rajkot and Gandhinagar"],
+        oT: ["அகமதாபாத் மற்றும் வதோதரா", "சூரத் மற்றும் பரூச்", "சபர்மதி மற்றும் மெஹ்சானா சந்திப்பு", "ராஜ்கோட் மற்றும் காந்திநகர்"],
+        a: 2,
+        exp: "India's first LNG-powered dual-fuel DEMU train was launched from Sabarmati to Mahesana Junction in Gujarat."
+    },
+    // 21 (a: 2)
+    {
+        qE: "Which state became the first in India to introduce a mandatory computer-based Hazard Perception Test (HPT) for driving licence applicants?",
+        qT: "ஓட்டுநர் உரிமம் விண்ணப்பதாரர்களுக்கு கணினி அடிப்படையிலான அபாய உணர்வுத் தேர்வைக் கட்டாயமாக்கிய இந்தியாவின் முதல் மாநிலம் எது?",
+        oE: ["Tamil Nadu", "Maharashtra", "Kerala", "Karnataka"],
+        oT: ["தமிழ்நாடு", "மகாராஷ்டிரா", "கேரளா", "கர்நாடகா"],
+        a: 2,
+        exp: "Kerala became the first state in India to introduce a mandatory Hazard Perception Test from December 2026 to improve road safety."
+    },
+    // 22 (a: 3)
+    {
+        qE: "Which city in Madhya Pradesh became the first city under Swachh Shehar Jodi to achieve 'Zero Legacy Waste'?",
+        qT: "ஸ்வச் ஷெஹர் ஜோடி திட்டத்தின் கீழ் 'பூஜ்ஜிய பழைய கழிவு' இலக்கை எட்டிய முதல் நகரமாக மாறிய மத்தியப் பிரதேச நகரம் எது?",
+        oE: ["Indore", "Jabalpur", "Ujjain", "Depalpur"],
+        oT: ["இந்தூர்", "ஜபல்பூர்", "உஜ்ஜைன்", "தேபல்பூர்"],
+        a: 3,
+        exp: "Depalpur in Madhya Pradesh remediated 1,250 metric tonnes of legacy waste to become the first city under Swachh Shehar Jodi to achieve Zero Legacy Waste."
+    },
+    // 23 (a: 0)
+    {
+        qE: "Where was India's 51st Doppler Weather Radar inaugurated?",
+        qT: "இந்தியாவின் 51வது டாப்ளர் வானிலை ரேடார் எங்கு திறந்து வைக்கப்பட்டது?",
+        oE: ["Sambalpur, Odisha", "Guwahati, Assam", "Ranchi, Jharkhand", "Bhopal, Madhya Pradesh"],
+        oT: ["சம்பல்பூர், ஒடிசா", "குவஹாத்தி, அசாம்", "ராஞ்சி, ஜார்க்கண்ட்", "போபால், மத்தியப் பிரதேசம்"],
+        a: 0,
+        exp: "India's 51st Doppler Weather Radar was inaugurated in Sambalpur, Odisha, to enhance weather monitoring and early warnings."
+    },
+    // 24 (a: 1)
+    {
+        qE: "Which state or Union Territory approved the 'DURGA e-Auto Scheme' to provide 1,300 pink electric autos to women and transgender persons?",
+        qT: "பெண்கள் மற்றும் திருநங்கைகளுக்கு 1,300 இளஞ்சிவப்பு மின்சார ஆட்டோக்களை வழங்கும் 'துர்கா இ-ஆட்டோ திட்டத்திற்கு' ஒப்புதல் அளித்த மாநிலம் அல்லது யூனியன் பிரதேசம் எது?",
+        oE: ["Uttar Pradesh", "Delhi", "Haryana", "Maharashtra"],
+        oT: ["உத்தரப் பிரதேசம்", "டெல்லி", "ஹரியானா", "மகாராஷ்டிரா"],
+        a: 1,
+        exp: "The Delhi Cabinet approved the DURGA (Driving Upliftment and Rozgar for Women/Transgender Green-Auto) e-Auto Scheme."
+    },
+    // 25 (a: 0)
+    {
+        qE: "In which city was the 'Group of Friends on Safety and Security of Shipping and Seafarers' jointly launched by India and Liberia?",
+        qT: "இந்தியா மற்றும் லைபீரியா இணைந்து 'கப்பல் போக்குவரத்து மற்றும் மாலுமிகள் பாதுகாப்புக்கான நட்பு நாடுகள் குழுவை' எந்த நகரத்தில் தொடங்கின?",
+        oE: ["New York", "London", "Geneva", "Singapore"],
+        oT: ["நியூயார்க்", "லண்டன்", "ஜெனீவா", "சிங்கப்பூர்"],
+        a: 0,
+        exp: "Co-chaired by EAM S. Jaishankar and Liberian Foreign Minister Sara Beysolow Nyanti, it was launched on 25 September 2026 at UN Headquarters, New York."
+    },
+    // 26 (a: 1)
+    {
+        qE: "Which city hosted the 27th World Knowledge Forum in September 2026?",
+        qT: "செப்டம்பர் 2026-இல் 27வது உலக அறிவு மன்றத்தை எந்த நகரம் நடத்தியது?",
+        oE: ["Tokyo", "Seoul", "Singapore", "Paris"],
+        oT: ["டோக்கியோ", "சியோல்", "சிங்கப்பூர்", "பாரிஸ்"],
+        a: 1,
+        exp: "The 27th World Knowledge Forum was held in Seoul, South Korea, organised by Maekyung Media Group with the theme 'The Promethean Moment: Architecting the Co-Intelligence Order'."
+    },
+    // 27 (a: 2)
+    {
+        qE: "The historic Red Sea port city of Mocha, recently captured by Iran-backed Houthis, is located in which country?",
+        qT: "சமீபத்தில் ஹவுதி கிளர்ச்சியாளர்களால் கைப்பற்றப்பட்ட வரலாற்றுச் சிறப்புமிக்க செங்கடல் துறைமுக நகரமான மோக்கா எந்த நாட்டில் அமைந்துள்ளது?",
+        oE: ["Oman", "Somalia", "Yemen", "Djibouti"],
+        oT: ["ஓமன்", "சோமாலியா", "ஏமன்", "ஜிபூட்டி"],
+        a: 2,
+        exp: "Mocha (Mokha) is a historic Red Sea port city in southwestern Yemen, famous as Arabia's chief coffee-exporting centre."
+    },
+    // 28 (a: 3)
+    {
+        qE: "Through which treaty was the South American economic bloc MERCOSUR established in 1991?",
+        qT: "தென் அமெரிக்கப் பொருளாதாரக் கூட்டமைப்பான மெர்கோசூர் 1991-ஆம் ஆண்டு எந்த ஒப்பந்தத்தின் மூலம் நிறுவப்பட்டது?",
+        oE: ["Treaty of Lima", "Treaty of Brasilia", "Treaty of Montevideo", "Treaty of Asunción"],
+        oT: ["லிமா ஒப்பந்தம்", "பிரேசிலியா ஒப்பந்தம்", "மான்டிவீடியோ ஒப்பந்தம்", "அசுன்சியோன் ஒப்பந்தம்"],
+        a: 3,
+        exp: "MERCOSUR was established in 1991 through the Treaty of Asunción; India and MERCOSUR recently signed the First Additional Protocol to their PTA for electronic Certificates of Origin."
+    },
+    // 29 (a: 3)
+    {
+        qE: "Who directed the Marathi psychological thriller 'Gondhal', selected as India's official entry for the 99th Academy Awards (Oscars 2027)?",
+        qT: "99வது ஆஸ்கர் விருதுகளுக்கான இந்தியாவின் அதிகாரப்பூர்வப் படமாகத் தேர்ந்தெடுக்கப்பட்ட 'கோந்தல்' மராத்தி திரைப்படத்தை இயக்கியவர் யார்?",
+        oE: ["Nagraj Manjule", "Aditya Suhas Jambhale", "Samjad PS", "Santosh Davakhar"],
+        oT: ["நாக்ராஜ் மஞ்சுளே", "ஆதித்யா சுஹாஸ் ஜம்பாலே", "சம்ஜத் பி.எஸ்", "சந்தோஷ் தவாகர்"],
+        a: 3,
+        exp: "Directed by Santosh Davakhar, 'Gondhal' was selected by the Film Federation of India as the 4th Marathi film to be India's official Oscar entry."
+    },
+    // 30 (a: 2)
+    {
+        qE: "Which Naga filmmaker's movie 'Angh' became the first Indian film to win the Platform Prize at the Toronto International Film Festival 2026?",
+        qT: "டொராண்டோ சர்வதேச திரைப்பட விழா 2026-இல் பிளாட்ஃபார்ம் பரிசை வென்ற முதல் இந்தியத் திரைப்படமான 'ஆங்' படத்தை இயக்கிய நாகா இயக்குநர் யார்?",
+        oE: ["Anuparna Roy", "Rajkumar Periasamy", "Theja Rio", "Samjad PS"],
+        oT: ["அனுபர்ணா ராய்", "ராஜ்குமார் பெரியசாமி", "தேஜா ரியோ", "சம்ஜத் பி.எஸ்"],
+        a: 2,
+        exp: "'Angh', directed by Naga filmmaker Theja Rio and rooted in Nagaland's Konyak Naga community, won the TIFF Platform Prize 2026."
+    },
+    // 31 (a: 1)
+    {
+        qE: "Which country assumed the chairmanship of the Shanghai Cooperation Organisation (SCO) for 2026–27 following the 26th SCO Summit in Bishkek?",
+        qT: "பிஷ்கெக்கில் நடைபெற்ற 26வது எஸ்சிஓ உச்சிமாநாட்டைத் தொடர்ந்து 2026–27 ஆம் ஆண்டிற்கான எஸ்சிஓ தலைமைப் பொறுப்பை ஏற்ற நாடு எது?",
+        oE: ["India", "Pakistan", "Kazakhstan", "Uzbekistan"],
+        oT: ["இந்தியா", "பாகிஸ்தான்", "கஜகஸ்தான்", "உஸ்பெகிஸ்தான்"],
+        a: 1,
+        exp: "Following the 26th SCO Summit in Bishkek, Kyrgyzstan, Pakistan assumed the 2026–27 chairmanship with the theme 'Turning Vision into Action: Connectivity, Innovation and Shared Prosperity'."
+    },
+    // 32 (a: 0)
+    {
+        qE: "Which country is constructing 'Princess Elisabeth Island', the world's first artificial energy island, in the North Sea?",
+        qT: "வட கடலில் உலகின் முதல் செயற்கை எரிசக்தித் தீவான 'இளவரசி எலிசபெத் தீவை' கட்டும் நாடு எது?",
+        oE: ["Belgium", "Denmark", "Netherlands", "Norway"],
+        oT: ["பெல்ஜியம்", "டென்மார்க்", "நெதர்லாந்து", "நார்வே"],
+        a: 0,
+        exp: "Belgium's Elia Transmission is building Princess Elisabeth Island in the North Sea to integrate up to 3.5 GW of offshore wind capacity."
+    },
+    // 33 (a: 1)
+    {
+        qE: "The 'Boma-Badingilo Migratory Landscape' was recently inscribed as the first UNESCO World Heritage Site of which country?",
+        qT: "'போமா-பாடிங்கிலோ வலசைப் பாதை நிலப்பரப்பு' சமீபத்தில் எந்த நாட்டின் முதல் யுனெஸ்கோ உலகப் பாரம்பரியத் தளமாக அறிவிக்கப்பட்டது?",
+        oE: ["Ethiopia", "South Sudan", "Kenya", "Tanzania"],
+        oT: ["எத்தியோப்பியா", "தெற்கு சூடான்", "கென்யா", "தான்சானியா"],
+        a: 1,
+        exp: "Boma-Badingilo Migratory Landscape, encompassing Boma and Badingilo National Parks, became South Sudan's first UNESCO World Heritage Site."
+    },
+    // 34 (a: 3)
+    {
+        qE: "Which country initiated the UN General Assembly resolution promoting geographically accurate equal-area world maps over the Mercator projection?",
+        qT: "மெர்கேட்டர் வரைபடத்திற்குப் பதிலாக புவியியல் ரீதியாகத் துல்லியமான சம-பரப்பளவு உலக வரைபடங்களை ஊக்குவிக்கும் ஐ.நா தீர்மானத்தை முன்மொழிந்த நாடு எது?",
+        oE: ["Nigeria", "South Africa", "Kenya", "Togo"],
+        oT: ["நைஜீரியா", "தென்னாப்பிரிக்கா", "கென்யா", "டோகோ"],
+        a: 3,
+        exp: "Togo initiated the non-binding resolution on behalf of the African Group with African Union support, adopted by the UNGA on 4 September 2026."
+    },
+    // 35 (a: 2)
+    {
+        qE: "Which Tamil classic's Russian translation was presented by Prime Minister Narendra Modi to Russian President Vladimir Putin during the 18th BRICS Summit?",
+        qT: "18வது பிரிக்ஸ் உச்சிமாநாட்டின் போது பிரதமர் நரேந்திர மோடி ரஷ்ய அதிபர் விளாடிமிர் புடினுக்கு எந்தத் தமிழ் இலக்கியத்தின் ரஷ்ய மொழிபெயர்ப்பைப் பரிசளித்தார்?",
+        oE: ["Silappatikaram", "Tolkappiyam", "Thirukkural", "Purananuru"],
+        oT: ["சிலப்பதிகாரம்", "தொல்காப்பியம்", "திருக்குறள்", "புறநானூறு"],
+        a: 2,
+        exp: "PM Narendra Modi presented the Russian translation of Thiruvalluvar's Thirukkural to Russian President Vladimir Putin at the 18th BRICS Summit in India."
+    },
+    // 36 (a: 0)
+    {
+        qE: "What declaration was adopted on 12 September 2026 at the Global Dryland Congress held in New Delhi?",
+        qT: "புதுடெல்லியில் நடைபெற்ற உலகளாவிய வறண்ட நில மாநாட்டில் செப்டம்பர் 12, 2026 அன்று ஏற்றுக்கொள்ளப்பட்ட பிரகடனம் எது?",
+        oE: ["Delhi Declaration on Drylands", "New Delhi Agri-Compact", "South-South Soil Charter", "Global Arid Land Pact"],
+        oT: ["வறண்ட நிலங்களுக்கான டெல்லி பிரகடனம்", "புதுடெல்லி வேளாண் ஒப்பந்தம்", "தெற்கு-தெற்கு மண் சாசனம்", "உலகளாவிய வறண்ட நில ஒப்பந்தம்"],
+        a: 0,
+        exp: "Organised by ICAR and ICRISAT, the Global Dryland Congress adopted the Delhi Declaration on Drylands (3D) on the UN Day for South-South Cooperation."
+    },
+    // 37 (a: 0)
+    {
+        qE: "Who became the longest continuously serving postwar Prime Minister of Italy in September 2026, surpassing Silvio Berlusconi's record?",
+        qT: "சில்வியோ பெர்லுஸ்கோனியின் சாதனையை முறியடித்து செப்டம்பர் 2026-இல் இத்தாலியின் போருக்குப் பிந்தைய நீண்ட காலத் தொடர் பிரதமராக மாறியவர் யார்?",
+        oE: ["Giorgia Meloni", "Mario Draghi", "Giuseppe Conte", "Matteo Renzi"],
+        oT: ["ஜியோர்ஜியா மெலோனி", "மரியோ திராகி", "ஜியுசெப்பே கோன்டே", "மேட்டியோ ரென்சி"],
+        a: 0,
+        exp: "Giorgia Meloni reached 1,413 consecutive days in office on 4 September 2026, surpassing Silvio Berlusconi's second government record of 1,412 days."
+    },
+    // 38 (a: 2)
+    {
+        qE: "Which Pacific island nation declared a National HIV Emergency in September 2026 after prevalence rose to about 1 in 60 adults?",
+        qT: "பெரியவர்களில் 60 பேரில் ஒருவருக்கு பாதிப்பு உயர்ந்ததைத் தொடர்ந்து செப்டம்பர் 2026-இல் தேசிய எச்ஐவி அவசரநிலையை அறிவித்த பசிபிக் தீவு நாடு எது?",
+        oE: ["Samoa", "Tonga", "Fiji", "Vanuatu"],
+        oT: ["சமோவா", "டோங்கா", "பிஜி", "வனுவாட்டு"],
+        a: 2,
+        exp: "Fiji Health Minister Dr. Atonio Lalabalavu declared a National HIV Emergency on 15 September 2026."
+    },
+    // 39 (a: 3)
+    {
+        qE: "Bangladesh declared 25 May 2026 to 25 May 2027 as 'Nazrul Borsho' to mark the 127th birth anniversary of which national poet?",
+        qT: "எந்த தேசியக் கவிஞரின் 127வது பிறந்தநாளை முன்னிட்டு வங்காளதேசம் மே 25, 2026 முதல் மே 25, 2027 வரை 'நஸ்ருல் போர்ஷோ' என அறிவித்துள்ளது?",
+        oE: ["Rabindranath Tagore", "Jibanananda Das", "Shamsur Rahman", "Kazi Nazrul Islam"],
+        oT: ["ரவீந்திரநாத் தாகூர்", "ஜீபனானந்த தாஸ்", "ஷம்சுர் ரஹ்மான்", "காசி நஸ்ருல் இஸ்லாம்"],
+        a: 3,
+        exp: "Bangladesh PM Tarique Rahman declared 'Nazrul Borsho' honouring national poet Kazi Nazrul Islam, known as 'Bidrohi Kobi' (rebel poet)."
+    },
+    // 40 (a: 1)
+    {
+        qE: "Which country will host the 19th BRICS Summit in 2027 after India's 2026 Chairship?",
+        qT: "2026-இல் இந்தியாவின் தலைமைக்குப் பிறகு 2027-இல் 19வது பிரிக்ஸ் உச்சிமாநாட்டை எந்த நாடு நடத்தவுள்ளது?",
+        oE: ["Brazil", "China", "Russia", "South Africa"],
+        oT: ["பிரேசில்", "சீனா", "ரஷ்யா", "தென்னாப்பிரிக்கா"],
+        a: 1,
+        exp: "India hosted the 18th BRICS Summit in 2026, and China will assume the next BRICS Chairship in 2027."
+    },
+
+    // ================= 40 DEFENCE, SCITECH, ENVIRONMENT & AWARDS MCQS (Q41 - Q80) =================
+    // 41 (a: 2)
+    {
+        qE: "Who was crowned the 73rd Miss World 2026 in Nha Trang, Vietnam?",
+        qT: "வியட்நாமின் நா ட்ராங்கில் நடைபெற்ற 73வது உலக அழகி 2026 போட்டியில் பட்டம் வென்றவர் யார்?",
+        oE: ["Elisabeth Reynes", "Taanusiya Chetty", "Joheirry Mola", "Suchata Chuangsri"],
+        oT: ["எலிசபெத் ரெய்னெஸ்", "தானுசியா செட்டி", "ஜோஹெரி மோலா", "சுசாதா சுவாங்ஸ்ரி"],
+        a: 2,
+        exp: "Joheirry Mola of the Dominican Republic won the 73rd Miss World 2026 crown, with Nikita Porwal representing India."
+    },
+    // 42 (a: 1)
+    {
+        qE: "Which farmer from Mizoram became the first Mizo woman selected among FAO's '100 Women Farmer Heroes'?",
+        qT: "ஐ.நா உணவு மற்றும் வேளாண் அமைப்பின் '100 பெண் விவசாயி வீராங்கனைகள்' பட்டியலில் தேர்ந்தெடுக்கப்பட்ட முதல் மிசோ பெண்மணி யார்?",
+        oE: ["Baljeet Kaur", "Z. T. Lalrithangi", "Shruti Malpani", "Anuparna Roy"],
+        oT: ["பல்ஜீத் கவுர்", "இசட். டி. லால்ரிதாங்கி", "சுருதி மால்பானி", "அனுபர்ணா ராய்"],
+        a: 1,
+        exp: "Z. T. Lalrithangi from Lawngtlai district, Mizoram was selected by FAO during the International Year of the Woman Farmer 2026 for developing profitable strawberry cultivation."
+    },
+    // 43 (a: 0)
+    {
+        qE: "Who won the 2026 SASTRA-Ramanujan Award for contributions to analytic number theory and additive combinatorics?",
+        qT: "பகுப்பாய்வு எண் கோட்பாடு மற்றும் சேர்க்கை காம்பினேட்டரிக்ஸ் பங்களிப்புகளுக்காக 2026 சாஸ்த்ரா-ராமானுஜன் விருதை வென்றவர் யார்?",
+        oE: ["Sarah Peluse", "Neena Gupta", "Maryna Viazovska", "Sethuraman Panchanathan"],
+        oT: ["சாரா பெலூஸ்", "நீனா குப்தா", "மரினா வியாசோவ்ஸ்கா", "சேதுராமன் பஞ்சநாதன்"],
+        a: 0,
+        exp: "Stanford University Associate Professor Sarah Peluse won the 2026 SASTRA-Ramanujan Award ($10,000), presented at Kumbakonam, Tamil Nadu."
+    },
+    // 44 (a: 3)
+    {
+        qE: "Which former Chief Justice of India received the Kalinga Ratna Award 2026 conferred by Sarala Sahitya Sansad?",
+        qT: "சரளா சாகித்ய சன்சாத் வழங்கிய 2026 கலிங்க ரத்னா விருதைப் பெற்ற முன்னாள் இந்தியத் தலைமை நீதிபதி யார்?",
+        oE: ["Justice Ranjan Gogoi", "Justice N. V. Ramana", "Justice D. Y. Chandrachud", "Justice Dipak Misra"],
+        oT: ["நீதிபதி ரஞ்சன் கோகோய்", "நீதிபதி என். வி. ரமணா", "நீதிபதி டி. ஒய். சந்திரசூட்", "நீதிபதி தீபக் மிஸ்ரா"],
+        a: 3,
+        exp: "Former CJI Justice Dipak Misra received the Kalinga Ratna Award 2026, while Dr. Ramachandra Behera received the Sarala Samman 2026."
+    },
+    // 45 (a: 3)
+    {
+        qE: "Which series won Outstanding Drama Series at the 78th Primetime Emmy Awards 2026?",
+        qT: "78வது பிரைம்டைம் எம்மி விருதுகள் 2026-இல் சிறந்த நாடகத் தொடருக்கான விருதை வென்ற தொடர் எது?",
+        oE: ["Widow's Bay", "DTF St. Louis", "Hacks", "The Pitt"],
+        oT: ["விடோஸ் பே", "டிடிஎஃப் செயின்ட் லூயிஸ்", "ஹேக்ஸ்", "தி பிட்"],
+        a: 3,
+        exp: "'The Pitt' won Outstanding Drama Series, while 'Widow's Bay' won Outstanding Comedy Series with a record 14 Emmys."
+    },
+    // 46 (a: 0)
+    {
+        qE: "Who won the Water Adventure category at the Tenzing Norgay National Adventure Awards 2024 announced in September 2026?",
+        qT: "செப்டம்பர் 2026-இல் அறிவிக்கப்பட்ட 2024 டென்சிங் நோர்கே தேசிய சாகச விருதுகளில் நீர் சாகசப் பிரிவில் விருது வென்றவர் யார்?",
+        oE: ["Rimo Saha", "Baljeet Kaur", "Skalzang Rigzin", "Shiv Prasad Chamoli"],
+        oT: ["ரிமோ சாஹா", "பல்ஜீத் கவுர்", "ஸ்கல்சாங் ரிக்சின்", "ஷிவ் பிரசாத் சாமோலி"],
+        a: 0,
+        exp: "Rimo Saha won Water Adventure, Baljeet Kaur and Skalzang Rigzin won Land Adventure, and Shiv Prasad Chamoli received the Lifetime Achievement award."
+    },
+    // 47 (a: 1)
+    {
+        qE: "Which city secured first place in the >10 Lakh population category at the 5th Swachh Vayu Sarvekshan Awards 2026?",
+        qT: "5வது ஸ்வச் வாயு சர்வேக்ஷன் விருதுகள் 2026-இல் 10 லட்சத்திற்கும் அதிகமான மக்கள்தொகை பிரிவில் முதலிடம் பிடித்த நகரம் எது?",
+        oE: ["Indore", "Lucknow", "Jabalpur", "Rourkela"],
+        oT: ["இந்தூர்", "லக்னோ", "ஜபல்பூர்", "ரூர்கேலா"],
+        a: 1,
+        exp: "Lucknow ranked 1st, Indore 2nd, and Jabalpur 3rd in the >10 Lakh category, while Rourkela topped the 3–10 Lakh category and Kalinga Nagar topped <3 Lakh."
+    },
+    // 48 (a: 2)
+    {
+        qE: "Who became the first Indian American to receive the U.S. National Academy of Engineering's Arthur M. Bueche Award in 2026?",
+        qT: "2026-இல் அமெரிக்க தேசிய பொறியியல் அகாடமியின் ஆர்தர் எம். பியூச் விருதைப் பெற்ற முதல் இந்திய அமெரிக்கர் யார்?",
+        oE: ["Subra Suresh", "Venki Ramakrishnan", "Sethuraman Panchanathan", "Arvind Krishna"],
+        oT: ["சுப்ரா சுரேஷ்", "வெங்கி ராமகிருஷ்ணன்", "சேதுராமன் பஞ்சநாதன்", "அரவிந்த் கிருஷ்ணா"],
+        a: 2,
+        exp: "Chennai-born former NSF Director Sethuraman Panchanathan became the first Indian American to win the Arthur M. Bueche Award."
+    },
+    // 49 (a: 0)
+    {
+        qE: "Veteran Kannada actor Anant Nag was presented the Dadasaheb Phalke Award 2024 at the 72nd National Film Awards held at which venue?",
+        qT: "மூத்த கன்னட நடிகர் அனந்த் நாக்கிற்கு 2024 தாதாசாகெப் பால்கே விருது எந்த இடத்தில் நடைபெற்ற 72வது தேசிய திரைப்பட விருது விழாவில் வழங்கப்பட்டது?",
+        oE: ["Ekta Nagar, Gujarat", "Vigyan Bhawan, New Delhi", "Bengaluru, Karnataka", "Mumbai, Maharashtra"],
+        oT: ["ஏக்தா நகர், குஜராத்", "விஞ்ஞான் பவன், புதுடெல்லி", "பெங்களூரு, கர்நாடகா", "மும்பை, மகாராஷ்டிரா"],
+        a: 0,
+        exp: "President Droupadi Murmu presented the Dadasaheb Phalke Award 2024 to Anant Nag on 22 September 2026 at Ekta Nagar (Kevadia), Gujarat."
+    },
+    // 50 (a: 3)
+    {
+        qE: "Which Tamil director won the Best Direction award at the 72nd National Film Awards for the film 'Amaran'?",
+        qT: "72வது தேசிய திரைப்பட விருதுகளில் 'அமரன்' திரைப்படத்திற்காக சிறந்த இயக்குநருக்கான விருதை வென்ற தமிழ் இயக்குநர் யார்?",
+        oE: ["Nithilan Saminathan", "Nag Ashwin", "Bharatbala Ganapathy", "Rajkumar Periasamy"],
+        oT: ["நித்திலன் சாமிநாதன்", "நாக் அஸ்வின்", "பரத்பாலா கணபதி", "ராஜ்குமார் பெரியசாமி"],
+        a: 3,
+        exp: "Rajkumar Periasamy won Best Direction for 'Amaran', while 'Article 370' won Best Feature Film and 'Kalki 2898 AD' won Best Popular Film."
+    },
+    // 51 (a: 2)
+    {
+        qE: "Which state's police force was presented the President's Colour by Union Home Minister Amit Shah on 7 September 2026?",
+        qT: "செப்டம்பர் 7, 2026 அன்று மத்திய உள்துறை அமைச்சர் அமித் ஷாவால் குடியரசுத் தலைவரின் கொடி எந்த மாநிலக் காவல்துறைக்கு வழங்கப்பட்டது?",
+        oE: ["Gujarat Police", "Assam Police", "Goa Police", "Uttarakhand Police"],
+        oT: ["குஜராத் காவல்துறை", "அசாம் காவல்துறை", "கோவா காவல்துறை", "உத்தரகாண்ட் காவல்துறை"],
+        a: 2,
+        exp: "Union Home Minister Amit Shah presented the President's Colour to Goa Police at the Dr. Shyama Prasad Mukherjee Indoor Stadium."
+    },
+    // 52 (a: 1)
+    {
+        qE: "Which Indian port authority won both 'Green Port of the Year' and 'Smart Port & Digital Transformation Project of the Year' at the ET Infra Global Ports & Shipping Awards 2026?",
+        qT: "ET இன்ஃப்ரா குளோபல் போர்ட்ஸ் & ஷிப்பிங் விருதுகள் 2026-இல் 'ஆண்டின் பசுமைத் துறைமுகம்' மற்றும் 'சிறந்த டிஜிட்டல் துறைமுகம்' ஆகிய இரு விருதுகளையும் வென்ற இந்தியத் துறைமுகம் எது?",
+        oE: ["Paradip Port Authority", "V. O. Chidambaranar Port Authority", "Jawaharlal Nehru Port Authority", "Cochin Port Authority"],
+        oT: ["பாரதீப் துறைமுக ஆணையம்", "வ. உ. சிதம்பரனார் துறைமுக ஆணையம்", "ஜவஹர்லால் நேரு துறைமுக ஆணையம்", "கொச்சி துறைமுக ஆணையம்"],
+        a: 1,
+        exp: "V. O. Chidambaranar Port Authority won both honours at the 4th ET Infra Global Ports & Shipping Summit 2026."
+    },
+    // 53 (a: 1)
+    {
+        qE: "Which Indian film directed by Anuparna Roy won the NETPAC Award for Best Asian Film at the Venice International Film Festival 2026?",
+        qT: "வெனிஸ் சர்வதேச திரைப்பட விழா 2026-இல் சிறந்த ஆசியத் திரைப்படத்திற்கான நெட்பேக் விருதை வென்ற அனுபர்ணா ராய் இயக்கிய இந்தியத் திரைப்படம் எது?",
+        oE: ["Gondhal", "Lovers in the Blue Night", "Angh", "Ram-Nami"],
+        oT: ["கோந்தல்", "லவர்ஸ் இன் தி ப்ளூ நைட்", "ஆங்", "ராம்-நாமி"],
+        a: 1,
+        exp: "'Lovers in the Blue Night', directed by Anuparna Roy, competed in the Orizzonti section and won the NETPAC Award."
+    },
+    // 54 (a: 2)
+    {
+        qE: "Which organisation from Andhra Pradesh became the first State Social Audit Organisation in India to receive the SKOCH Gold Award 2026?",
+        qT: "2026 ஸ்கோச் தங்க விருதைப் பெற்ற இந்தியாவின் முதல் மாநில சமூகத் தணிக்கை அமைப்பாக மாறிய ஆந்திரப் பிரதேச அமைப்பு எது?",
+        oE: ["APFDC", "ICRISAT", "SSAAT", "APEDA"],
+        oT: ["ஏபிஎஃப்டிசி", "இக்ரிசாட்", "எஸ்எஸ்ஏஏடி", "அபெடா"],
+        a: 2,
+        exp: "The Society for Social Audit Accountability and Transparency (SSAAT), Andhra Pradesh won the SKOCH Gold Award at the 109th SKOCH Summit."
+    },
+    // 55 (a: 3)
+    {
+        qE: "Which groundnut variety developed by UAS Dharwad won the ISSCA Award 2026 during the Drylands Congress 2026?",
+        qT: "வறண்ட நில மாநாடு 2026-இன் போது ISSCA விருது 2026-ஐ வென்ற தார்வாட் வேளாண் பல்கலைக்கழகம் உருவாக்கிய நிலக்கடலை ரகம் எது?",
+        oE: ["TMV 7", "JL 24", "K 6", "GPBD 4"],
+        oT: ["TMV 7", "JL 24", "K 6", "GPBD 4"],
+        a: 3,
+        exp: "GPBD 4, developed by the University of Agricultural Sciences, Dharwad, won the ISSCA Award 2026 in Crop Improvement and Production Technologies."
+    },
+    // 56 (a: 0)
+    {
+        qE: "Which school won the national title at the 27th National Youth Parliament Competition 2025–26?",
+        qT: "27வது தேசிய இளைஞர் நாடாளுமன்றப் போட்டி 2025–26-இல் தேசியப் பட்டத்தை வென்ற பள்ளி எது?",
+        oE: ["PM Shri JNV Ukhrul-1, Manipur", "PM Shri JNV Leh, Ladakh", "PM Shri JNV Kumbakonam, Tamil Nadu", "PM Shri JNV Patna, Bihar"],
+        oT: ["பிஎம் ஸ்ரீ ஜேஎன்வி உக்ருல்-1, மணிப்பூர்", "பிஎம் ஸ்ரீ ஜேஎன்வி லே, லடாக்", "பிஎம் ஸ்ரீ ஜேஎன்வி கும்பகோணம், தமிழ்நாடு", "பிஎம் ஸ்ரீ ஜேஎன்வி பாட்னா, பீகார்"],
+        a: 0,
+        exp: "PM Shri Jawahar Navodaya Vidyalaya, Ukhrul-1 (Manipur) won the Pt. Jawaharlal Nehru Running Parliamentary Shield presented by Union Minister Kiren Rijiju."
+    },
+    // 57 (a: 2)
+    {
+        qE: "Which two organisations jointly developed the indigenous 300-kg-class Khagantak-243 Long Range Glide Bomb?",
+        qT: "300 கிலோ வகுப்பைச் சேர்ந்த உள்நாட்டு ககந்தக்-243 நீண்ட தூர கிளைட் குண்டை எந்த இரு நிறுவனங்கள் இணைந்து உருவாக்கின?",
+        oE: ["DRDO and HAL", "TASL and L&T", "JSR Dynamics and BEL", "ISRO and BDL"],
+        oT: ["டிஆர்டிஓ மற்றும் எச்ஏஎல்", "டாஸ்ல் மற்றும் எல் அண்ட் டி", "ஜேஎஸ்ஆர் டைனமிக்ஸ் மற்றும் பிஇஎல்", "இஸ்ரோ மற்றும் பிடிஎல்"],
+        a: 2,
+        exp: "Khagantak-243, with a range of over 140 km, was developed by JSR Dynamics in collaboration with Bharat Electronics Limited (BEL)."
+    },
+    // 58 (a: 0)
+    {
+        qE: "What record speed was achieved by the Hyderabad-developed 'Ahuti Mk II' multirotor UAV?",
+        qT: "ஹைதராபாத்தில் உருவாக்கப்பட்ட 'ஆஹுதி Mk II' மல்டிரோட்டர் ஆளில்லா விமானம் எட்டிய சாதனை வேகம் எவ்வளவு?",
+        oE: ["498 km/h", "380 km/h", "425 km/h", "540 km/h"],
+        oT: ["498 கி.மீ/மணி", "380 கி.மீ/மணி", "425 கி.மீ/மணி", "540 கி.மீ/மணி"],
+        a: 0,
+        exp: "Developed by Apollyon Dynamics (incubated at BITS Pilani Hyderabad), Ahuti Mk II achieved 498 km/h to become India's fastest multirotor UAV."
+    },
+    // 59 (a: 1)
+    {
+        qE: "Which shipyard built the Ocean Research Vessel 'ORV Sagar Manthan' launched in September 2026 under India's Deep Ocean Mission?",
+        qT: "இந்தியாவின் ஆழ்கடல் திட்டத்தின் கீழ் செப்டம்பர் 2026-இல் கடலில் இறக்கப்பட்ட 'ORV சாகர் மந்தன்' ஆராய்ச்சிக் கப்பலைக் கட்டிய கப்பல் கட்டும் தளம் எது?",
+        oE: ["Cochin Shipyard Limited", "Garden Reach Shipbuilders and Engineers", "Mazagon Dock Shipbuilders", "Hindustan Shipyard Limited"],
+        oT: ["கொச்சி கப்பல் கட்டும் தளம்", "கார்டன் ரீச் ஷிப்பீல்டர்ஸ் அண்ட் இன்ஜினியர்ஸ்", "மசாகன் டாக் ஷிப்பீல்டர்ஸ்", "ஹிந்துஸ்தான் கப்பல் கட்டும் தளம்"],
+        a: 1,
+        exp: "GRSE built ORV Sagar Manthan for NCPOR; scheduled for delivery in 2028, it will gradually succeed ORV Sagar Kanya."
+    },
+    // 60 (a: 3)
+    {
+        qE: "Which Indian Navy ship became the first to dock at Ream Naval Base in Cambodia in September 2026?",
+        qT: "செப்டம்பர் 2026-இல் கம்போடியாவின் ரியாம் கடற்படைத் தளத்தில் நிறுத்தப்பட்ட முதல் இந்திய கடற்படைக் கப்பல் எது?",
+        oE: ["INS Kavaratti", "INS Jyoti", "INS Sahyadri", "INS Kulish"],
+        oT: ["ஐஎன்எஸ் கவரத்தி", "ஐஎன்எஸ் ஜோதி", "ஐஎன்எஸ் சஹ்யாத்ரி", "ஐஎன்எஸ் குலிஷ்"],
+        a: 3,
+        exp: "Guided-missile corvette INS Kulish docked at Ream Naval Base, Cambodia from 12–15 September 2026."
+    },
+    // 61 (a: 3)
+    {
+        qE: "Where was the Indian Air Force's first-ever 'IAF Dronathon-2026' organised?",
+        qT: "இந்திய விமானப்படையின் முதல் 'IAF ட்ரோனத்தான்-2026' எங்கு நடத்தப்பட்டது?",
+        oE: ["Air Force Station Jodhpur", "Air Force Station Yelahanka", "Chandipur, Odisha", "Pokhran Field Firing Range, Jaisalmer"],
+        oT: ["ஜோத்பூர் விமானப்படைத் தளம்", "யெலஹங்கா விமானப்படைத் தளம்", "சந்திப்பூர், ஒடிசா", "பொக்ரான் துப்பாக்கிச் சூடு தளம், ஜெய்சால்மர்"],
+        a: 3,
+        exp: "The first IAF Dronathon-2026 was held from 14–16 September 2026 at Pokhran Field Firing Range, Jaisalmer."
+    },
+    // 62 (a: 1)
+    {
+        qE: "What was the theme of the Indian Air Force's multilateral air exercise 'Tarang Shakti 2026' held at Jodhpur?",
+        qT: "ஜோத்பூரில் நடைபெற்ற இந்திய விமானப்படையின் பல்தரப்பு வான்வழிப் பயிற்சியான 'தரங் சக்தி 2026'-இன் கருப்பொருள் என்ன?",
+        oE: ["Touch the Sky with Glory", "Power in Partnership", "Anchored in Trust", "Stronger Together"],
+        oT: ["பெருமையுடன் வானைத் தொடுவோம்", "கூட்டாண்மையில் வலிமை", "நம்பிக்கையில் நிலைத்திருப்போம்", "ஒன்றாக வலிமை பெறுவோம்"],
+        a: 1,
+        exp: "Exercise Tarang Shakti 2026 involved seven foreign countries at Air Force Station Jodhpur under the theme 'Power in Partnership'."
+    },
+    // 63 (a: 0)
+    {
+        qE: "Which shipyard laid the keel of the Indian Navy's first Next Generation Missile Vessel (NGMV) in September 2026?",
+        qT: "செப்டம்பர் 2026-இல் இந்திய கடற்படையின் முதல் அடுத்த தலைமுறை ஏவுகணைக் கப்பலுக்கு அடிக்கல் நாட்டிய கப்பல் கட்டும் தளம் எது?",
+        oE: ["Cochin Shipyard Limited", "Goa Shipyard Limited", "Garden Reach Shipbuilders", "Mazagon Dock Shipbuilders"],
+        oT: ["கொச்சி கப்பல் கட்டும் தளம்", "கோவா கப்பல் கட்டும் தளம்", "கார்டன் ரீச் ஷிப்பீல்டர்ஸ்", "மசாகன் டாக் ஷிப்பீல்டர்ஸ்"],
+        a: 0,
+        exp: "Cochin Shipyard Limited laid the keel of the first of six NGMVs on 18 September 2026 at Kochi."
+    },
+    // 64 (a: 2)
+    {
+        qE: "Which Indian Coast Guard ship sailed from Chennai to Perth, Australia for the QUAD-at-Sea Ship Observer Mission?",
+        qT: "குவாட்-அட்-கடல் கப்பல் பார்வையாளர் பணிக்காக சென்னையிலிருந்து ஆஸ்திரேலியாவின் பெர்த் நகருக்குப் புறப்பட்ட இந்திய கடலோரக் காவல்படைக் கப்பல் எது?",
+        oE: ["ICGS Samarth", "ICGS Vikram", "ICGS Shaunak", "ICGS Vigraha"],
+        oT: ["ஐசிஜிஎஸ் சமர்த்", "ஐசிஜிஎஸ் விக்ரம்", "ஐசிஜிஎஸ் சவுனக்", "ஐசிஜிஎஸ் விக்ரஹா"],
+        a: 2,
+        exp: "ICG Ship Shaunak sailed from Chennai for Perth on 25 September 2026 with six Sea Riders from India, Australia, Japan, and the USA."
+    },
+    // 65 (a: 0)
+    {
+        qE: "Which launch vehicle successfully placed India's first geosynchronous Earth-imaging satellite 'EOS-05' into orbit?",
+        qT: "இந்தியாவின் முதல் புவி-ஒத்திசைவு பூமி கண்காணிப்பு செயற்கைக்கோளான 'EOS-05'-ஐ எந்த ஏவுகணை வெற்றிகரமாக விண்ணில் நிலைநிறுத்தியது?",
+        oE: ["GSLV-F17", "GSLV-F18", "PSLV-C60", "LVM3-M5"],
+        oT: ["GSLV-F17", "GSLV-F18", "PSLV-C60", "LVM3-M5"],
+        a: 0,
+        exp: "ISRO launched GSLV-F17 carrying EOS-05 on 4 September 2026 from SDSC-SHAR, Sriharikota."
+    },
+    // 66 (a: 2)
+    {
+        qE: "What is the name of the youngest known planet confirmed by astronomers in September 2026, estimated to be under 1 million years old?",
+        qT: "1 மில்லியன் ஆண்டுகளுக்கும் குறைவான வயதுடையதாக செப்டம்பர் 2026-இல் வானியலாளர்களால் உறுதிப்படுத்தப்பட்ட மிக இளமையான கோளின் பெயர் என்ன?",
+        oE: ["Proxima b", "Kepler-186f", "Elias 2-24 b", "TRAPPIST-1e"],
+        oT: ["ப்ராக்ஸிமா பி", "கெப்லர்-186எஃப்", "எலியாஸ் 2-24 பி", "டிராப்பிஸ்ட்-1இ"],
+        a: 2,
+        exp: "Elias 2-24 b orbits the young star Elias 2-24 about 450 light-years from Earth and remains embedded in its natal dust-and-gas disk."
+    },
+    // 67 (a: 3)
+    {
+        qE: "Where was India's first-of-its-kind 'Green Forge Complex' for controlled GM crop experimentation inaugurated?",
+        qT: "கட்டுப்படுத்தப்பட்ட சூழலில் மரபணு மாற்றப்பட்ட பயிர்களைச் சோதிக்கும் இந்தியாவின் முதல் 'கிரீன் ஃபோர்ஜ் காம்ப்ளக்ஸ்' எங்கு திறக்கப்பட்டது?",
+        oE: ["New Delhi", "Bengaluru, Karnataka", "Hyderabad, Telangana", "Mohali, Punjab"],
+        oT: ["புதுடெல்லி", "பெங்களூரு, கர்நாடகா", "ஹைதராபாத், தெலங்கானா", "மொஹாலி, பஞ்சாப்"],
+        a: 3,
+        exp: "Union Minister Dr. Jitendra Singh inaugurated the Green Forge Complex at BRIC-NABI, Mohali, Punjab, linked with India's BioE3 Policy."
+    },
+    // 68 (a: 1)
+    {
+        qE: "Which Bengaluru-based firm announced the development of India's first indigenous Optical Inter-Satellite Link (OISL) terminal?",
+        qT: "இந்தியாவின் முதல் உள்நாட்டு ஆப்டிகல் இன்டர்-சாட்டிலைட் லிங்க் முனையத்தை உருவாக்கிய பெங்களூரு நிறுவனம் எது?",
+        oE: ["Pixxel", "Astrogate Labs", "Skyroot Aerospace", "Bellatrix Aerospace"],
+        oT: ["பிக்சல்", "ஆஸ்ட்ரோகேட் லேப்ஸ்", "ஸ்கைரூட் ஏரோஸ்பேஸ்", "பெல்லாட்ரிக்ஸ் ஏரோஸ்பேஸ்"],
+        a: 1,
+        exp: "Astrogate Labs announced India's first indigenous OISL terminal for laser-based satellite-to-satellite data transfer, targeted to be flight-ready in 2027."
+    },
+    // 69 (a: 1)
+    {
+        qE: "Where is ISRO establishing the ISTRAC Advanced Radar Research Facility (IARRF)?",
+        qT: "இஸ்ரோ தனது ISTRAC மேம்பட்ட ரேடார் ஆராய்ச்சி மையத்தை எங்கு நிறுவுகிறது?",
+        oE: ["Sriharikota, Andhra Pradesh", "Chandrapur near Guwahati, Assam", "Thiruvananthapuram, Kerala", "Ahmedabad, Gujarat"],
+        oT: ["ஸ்ரீஹரிகோட்டா, ஆந்திரப் பிரதேசம்", "குவஹாத்தி அருகே சந்திரபூர், அசாம்", "திருவனந்தபுரம், கேரளா", "அகமதாபாத், குஜராத்"],
+        a: 1,
+        exp: "ISRO is establishing IARRF at Chandrapur near Guwahati, Assam for next-generation atmospheric, ionospheric, and space-weather radar research."
+    },
+    // 70 (a: 3)
+    {
+        qE: "Which African nation became the 72nd signatory to the NASA-led Artemis Accords in September 2026?",
+        qT: "செப்டம்பர் 2026-இல் நாசா தலைமையிலான ஆர்ட்டெமிஸ் ஒப்பந்தத்தில் 72வது நாடாகக் கையெழுத்திட்ட ஆப்பிரிக்க நாடு எது?",
+        oE: ["Kenya", "Nigeria", "Morocco", "Djibouti"],
+        oT: ["கென்யா", "நைஜீரியா", "மொராக்கோ", "ஜிபூட்டி"],
+        a: 3,
+        exp: "Djibouti signed the Artemis Accords on 14 September 2026, becoming the 72nd signatory overall and 8th African nation."
+    },
+    // 71 (a: 2)
+    {
+        qE: "The thermal infrared Earth-observation satellite mission 'TRISHNA' is jointly developed by ISRO and which foreign space agency?",
+        qT: "வெப்ப அகச்சிவப்பு பூமி கண்காணிப்பு செயற்கைக்கோள் திட்டமான 'திரிஷ்ணா' இஸ்ரோ மற்றும் எந்த வெளிநாட்டு விண்வெளி நிறுவனத்தால் கூட்டாக உருவாக்கப்படுகிறது?",
+        oE: ["NASA", "JAXA", "CNES", "Roscosmos"],
+        oT: ["நாசா", "ஜாக்ஸா", "சிஎன்இஎஸ்", "ராஸ்காஸ்மோஸ்"],
+        a: 2,
+        exp: "TRISHNA is a joint mission of ISRO and France's CNES, scheduled for launch in 2027 with ~60 m resolution."
+    },
+    // 72 (a: 0)
+    {
+        qE: "Which organisation launched the 'AlphaGenome Atlas' free research platform featuring predictions for 9 billion genetic variants?",
+        qT: "9 பில்லியன் மரபணு மாறுபாடுகளுக்கான கணிப்புகளைக் கொண்ட 'ஆல்பாஜீனோம் அட்லஸ்' இலவச ஆராய்ச்சித் தளத்தைத் தொடங்கிய நிறுவனம் எது?",
+        oE: ["Google DeepMind", "OpenAI", "Microsoft Research", "Intel India"],
+        oT: ["கூகுள் டீப்மைண்ட்", "ஓபன்ஏஐ", "மைக்ரோசாப்ட் ரிசர்ச்", "இன்டெல் இந்தியா"],
+        a: 0,
+        exp: "Google DeepMind launched AlphaGenome Atlas on 8 September 2026 using the AlphaGenome Variant Impact (AVI) score."
+    },
+    // 73 (a: 2)
+    {
+        qE: "Where was the 17th Conference of the Parties (COP17) to the UNCCD held in August 2026?",
+        qT: "ஆகஸ்ட் 2026-இல் ஐ.நா பாலைவனமாதலைத் தடுக்கும் மாநாட்டின் 17வது அமர்வு எங்கு நடைபெற்றது?",
+        oE: ["Baku, Azerbaijan", "Antalya, Türkiye", "Ulaanbaatar, Mongolia", "Jaipur, India"],
+        oT: ["பாகு, அஜர்பைஜான்", "அன்டால்யா, துருக்கி", "உலான்பாதர், மங்கோலியா", "ஜெய்ப்பூர், இந்தியா"],
+        a: 2,
+        exp: "UNCCD COP17 was held in Ulaanbaatar, Mongolia (17–28 August 2026) with the theme 'Restoring Land, Restoring Hope'."
+    },
+    // 74 (a: 0)
+    {
+        qE: "In which South American country was the new wild cat species 'Leopardus tilcayo' formally identified?",
+        qT: "புதிய காட்டுப் பூனை இனமான 'லியோபார்டஸ் டில்காயோ' எந்த தென் அமெரிக்க நாட்டில் முறையாக அடையாளம் காணப்பட்டது?",
+        oE: ["Bolivia", "Brazil", "Peru", "Colombia"],
+        oT: ["பொலிவியா", "பிரேசில்", "பெரு", "கொலம்பியா"],
+        a: 0,
+        exp: "Found in Bolivia's Yungas cloud forest, Leopardus tilcayo is the first new living wild cat species formally described in over 100 years."
+    },
+    // 75 (a: 3)
+    {
+        qE: "Which date was agreed to be observed as 'SAWEN Day' under the Kathmandu Declaration on Wildlife Crimes?",
+        qT: "வனவிலங்கு குற்றங்கள் குறித்த காத்மாண்டு பிரகடனத்தின் கீழ் எந்தத் தேதி 'சாவென் தினமாக' அனுசரிக்க ஒப்புக்கொள்ளப்பட்டது?",
+        oE: ["5 June", "10 September", "3 March", "30 January"],
+        oT: ["ஜூன் 5", "செப்டம்பர் 10", "மார்ச் 3", "ஜனவரி 30"],
+        a: 3,
+        exp: "At the First General Assembly of SAWEN in Kathmandu, Nepal, member countries agreed to observe 30 January as SAWEN Day."
+    },
+    // 76 (a: 1)
+    {
+        qE: "Which institution serves as the operating agency for India's PRAMAAN forest and agroforestry certification scheme?",
+        qT: "இந்தியாவின் பிரமாண் வன மற்றும் வேளாண் காடுகள் சான்றிதழ் திட்டத்தின் செயல்பாட்டு நிறுவனமாக எது செயல்படுகிறது?",
+        oE: ["Forest Research Institute, Dehradun", "Indian Institute of Forest Management, Bhopal", "Wildlife Institute of India, Dehradun", "National Biodiversity Authority, Chennai"],
+        oT: ["வன ஆராய்ச்சி நிறுவனம், டேராடூன்", "இந்திய வன மேலாண்மை நிறுவனம், போபால்", "இந்திய வனவிலங்கு நிறுவனம், டேராடூன்", "தேசிய பல்லுயிர் ஆணையம், சென்னை"],
+        a: 1,
+        exp: "Issued under the Indian Forest and Wood Certification Scheme (IFWCS), PRAMAAN is operated by IIFM, Bhopal."
+    },
+    // 77 (a: 3)
+    {
+        qE: "Which agency issues 'Kallakkadal' (swell surge) coastal flooding warnings in India through its SIVAS forecasting system?",
+        qT: "இந்தியாவில் தனது SIVAS முன்னறிவிப்பு அமைப்பு மூலம் 'கள்ளக்கடல்' கடலோர வெள்ள எச்சரிக்கைகளை வெளியிடும் அமைப்பு எது?",
+        oE: ["IMD", "NDMA", "NIOT", "INCOIS"],
+        oT: ["ஐஎம்டி", "என்டிஎம்ஏ", "என்ஐஓடி", "இன்கோயிஸ்"],
+        a: 3,
+        exp: "INCOIS issues Kallakkadal warnings through SIVAS, primarily protecting Kerala, South Tamil Nadu, and Lakshadweep."
+    },
+    // 78 (a: 1)
+    {
+        qE: "By September 2026, completing four years of Project Cheetah, India's cheetah population reached what figure?",
+        qT: "புராஜெக்ட் சீட்டாவின் நான்கு ஆண்டுகளை நிறைவு செய்த செப்டம்பர் 2026-இல் இந்தியாவின் சிறுத்தைகளின் எண்ணிக்கை எவ்வளவை எட்டியது?",
+        oE: ["29", "52", "44", "61"],
+        oT: ["29", "52", "44", "61"],
+        a: 1,
+        exp: "India's cheetah population reached 52 by September 2026 across Kuno National Park and Gandhi Sagar Wildlife Sanctuary."
+    },
+    // 79 (a: 0)
+    {
+        qE: "In which strait is Indonesia's active volcanic island 'Anak Krakatau', which erupted in September 2026, located?",
+        qT: "செப்டம்பர் 2026-இல் வெடித்த இந்தோனேசியாவின் 'அனக் கிரகடாவ்' எரிமலைத் தீவு எந்த ஜலசந்தியில் அமைந்துள்ளது?",
+        oE: ["Sunda Strait", "Malacca Strait", "Lombok Strait", "Hormuz Strait"],
+        oT: ["சுண்டா ஜலசந்தி", "மலாக்கா ஜலசந்தி", "லொம்போக் ஜலசந்தி", "ஹோர்முஸ் ஜலசந்தி"],
+        a: 0,
+        exp: "Anak Krakatau is an active stratovolcano located in the Sunda Strait between Java and Sumatra, Indonesia."
+    },
+    // 80 (a: 2)
+    {
+        qE: "Which critically endangered bird restricted to the Chatham Islands was named New Zealand's Bird of the Year 2026?",
+        qT: "சாதம் தீவுகளில் மட்டுமே காணப்படும் எந்த அருகிவரும் பறவை நியூசிலாந்தின் '2026 ஆம் ஆண்டின் சிறந்த பறவை' எனப் பெயரிடப்பட்டது?",
+        oE: ["Kakapo", "Kiwi", "Karure", "Kea"],
+        oT: ["காகாபோ", "கிவி", "கருரே", "கியா"],
+        a: 2,
+        exp: "Karure (Chatham Islands black robin), classified as Nationally Critical, was named New Zealand's Bird of the Year 2026."
+    },
+
+    // ================= 20 STATEMENT-BASED QUESTIONS (Q81 - Q100) =================
+    // 81 (Nat/State/Intl - Ans: 0 - Only 1)
+    {
+        qE: "Consider the following statements:\n1. The 9th Rashtriya Poshan Maah 2026 was launched in Varanasi by Union Minister Annpurna Devi.\n2. Doordarshan was established in 1965 as India's public television broadcaster.",
+        qT: "பின்வரும் கூற்றுகளைக் கவனியுங்கள்:\n1. 9வது ராஷ்ட்ரிய போஷான் மாதம் 2026 மத்திய அமைச்சர் அன்னபூர்ணா தேவியால் வாரணாசியில் தொடங்கப்பட்டது.\n2. தூர்தர்ஷன் 1965-இல் இந்தியாவின் பொதுத் தொலைக்காட்சி ஒளிபரப்பு நிறுவனமாக நிறுவப்பட்டது.",
+        oE: ["Only 1", "Only 2", "Both 1 and 2", "Neither 1 nor 2"],
+        oT: ["1 மட்டும்", "2 மட்டும்", "1 மற்றும் 2 இரண்டும்", "1 மற்றும் 2 இரண்டும் இல்லை"],
+        a: 0,
+        exp: "Statement 1 is correct. Statement 2 is incorrect because Doordarshan was established on 15 September 1959 and celebrated its 67th Foundation Day in 2026."
+    },
+    // 82 (Nat/State/Intl - Ans: 2 - Both 1 and 2)
+    {
+        qE: "Consider the following statements:\n1. The 28th Western Zonal Council Meeting was chaired by Union Home Minister Amit Shah in Panaji, Goa.\n2. The 16th Aero India exhibition will be held at Air Force Station Yelahanka, Bengaluru in February 2027.",
+        qT: "பின்வரும் கூற்றுகளைக் கவனியுங்கள்:\n1. 28வது மேற்கு மண்டல கவுன்சில் கூட்டம் கோவாவின் பனாஜியில் மத்திய உள்துறை அமைச்சர் அமித் ஷா தலைமையில் நடைபெற்றது.\n2. 16வது ஏரோ இந்தியா கண்காட்சி பிப்ரவரி 2027-இல் பெங்களூரு யெலஹங்கா விமானப்படைத் தளத்தில் நடைபெறவுள்ளது.",
+        oE: ["Only 1", "Only 2", "Both 1 and 2", "Neither 1 nor 2"],
+        oT: ["1 மட்டும்", "2 மட்டும்", "1 மற்றும் 2 இரண்டும்", "1 மற்றும் 2 இரண்டும் இல்லை"],
+        a: 2,
+        exp: "Both statements are correct."
+    },
+    // 83 (Nat/State/Intl - Ans: 1 - Only 2)
+    {
+        qE: "Consider the following statements:\n1. Bidriware is a GI-tagged metal craft belonging to Andhra Pradesh.\n2. India's 7th Postal Training Centre foundation stone was laid at Shivpuri, Madhya Pradesh.",
+        qT: "பின்வரும் கூற்றுகளைக் கவனியுங்கள்:\n1. பித்ரிவேர் என்பது ஆந்திரப் பிரதேசத்தைச் சேர்ந்த புவிசார் குறியீடு பெற்ற உலோகக் கைவினைக் கலையாகும்.\n2. இந்தியாவின் 7வது அஞ்சல் பயிற்சி மையத்திற்கு மத்தியப் பிரதேசத்தின் சிவபுரியில் அடிக்கல் நாட்டப்பட்டது.",
+        oE: ["Only 1", "Only 2", "Both 1 and 2", "Neither 1 nor 2"],
+        oT: ["1 மட்டும்", "2 மட்டும்", "1 மற்றும் 2 இரண்டும்", "1 மற்றும் 2 இரண்டும் இல்லை"],
+        a: 1,
+        exp: "Statement 1 is incorrect because Bidriware originates from Bidar, Karnataka. Statement 2 is correct."
+    },
+    // 84 (Nat/State/Intl - Ans: 3 - Neither 1 nor 2)
+    {
+        qE: "Consider the following statements:\n1. Hyderabad Liberation Day is observed on 12 September every year.\n2. Saragarhi Day is observed on 17 September every year.",
+        qT: "பின்வரும் கூற்றுகளைக் கவனியுங்கள்:\n1. ஹைதராபாத் விடுதலை தினம் ஒவ்வொரு ஆண்டும் செப்டம்பர் 12 அன்று அனுசரிக்கப்படுகிறது.\n2. சாரகர்ஹி தினம் ஒவ்வொரு ஆண்டும் செப்டம்பர் 17 அன்று அனுசரிக்கப்படுகிறது.",
+        oE: ["Only 1", "Only 2", "Both 1 and 2", "Neither 1 nor 2"],
+        oT: ["1 மட்டும்", "2 மட்டும்", "1 மற்றும் 2 இரண்டும்", "1 மற்றும் 2 இரண்டும் இல்லை"],
+        a: 3,
+        exp: "Both statements are incorrect because the dates are swapped: Saragarhi Day is on 12 September (Battle of Saragarhi, 1897) and Hyderabad Liberation Day is on 17 September (Operation Polo, 1948)."
+    },
+    // 85 (Nat/State/Intl - Ans: 2 - Both 1 and 2)
+    {
+        qE: "Consider the following statements:\n1. Uttar Pradesh launched 'Bharat Taxi' as India's first cooperative-led ride-hailing platform.\n2. The Uttar Pradesh Cabinet approved establishing a Regional Centre of the National Security Guard (NSG) in Ayodhya.",
+        qT: "பின்வரும் கூற்றுகளைக் கவனியுங்கள்:\n1. இந்தியாவின் முதல் கூட்டுறவு அடிப்படையிலான வாகன முன்பதிவுத் தளமான 'பாரத் டாக்ஸி' உத்தரப் பிரதேசத்தில் தொடங்கப்பட்டது.\n2. அயோத்தியில் தேசிய பாதுகாப்புப் படையின் பிராந்திய மையத்தை அமைக்க உத்தரப் பிரதேச அமைச்சரவை ஒப்புதல் அளித்துள்ளது.",
+        oE: ["Only 1", "Only 2", "Both 1 and 2", "Neither 1 nor 2"],
+        oT: ["1 மட்டும்", "2 மட்டும்", "1 மற்றும் 2 இரண்டும்", "1 மற்றும் 2 இரண்டும் இல்லை"],
+        a: 2,
+        exp: "Both statements are correct."
+    },
+    // 86 (Nat/State/Intl - Ans: 3 - Neither 1 nor 2)
+    {
+        qE: "Consider the following statements:\n1. The 680 MW Attunli Hydroelectric Project is located in Himachal Pradesh.\n2. The inaugural Chirbirey River Fest 2026 was held in Mizoram.",
+        qT: "பின்வரும் கூற்றுகளைக் கவனியுங்கள்:\n1. 680 மெகாவாட் திறன் கொண்ட அத்துன்லி நீர்மின் திட்டம் இமாச்சலப் பிரதேசத்தில் அமைந்துள்ளது.\n2. முதலாவது சிர்பிரே நதித் திருவிழா 2026 மிசோராமில் நடைபெற்றது.",
+        oE: ["Only 1", "Only 2", "Both 1 and 2", "Neither 1 nor 2"],
+        oT: ["1 மட்டும்", "2 மட்டும்", "1 மற்றும் 2 இரண்டும்", "1 மற்றும் 2 இரண்டும் இல்லை"],
+        a: 3,
+        exp: "Both statements are incorrect. The Attunli Hydroelectric Project is in Dibang Valley, Arunachal Pradesh, and Chirbirey River Fest 2026 was held on the Rangeet River in Sikkim."
+    },
+    // 87 (Nat/State/Intl - Ans: 0 - Only 1)
+    {
+        qE: "Consider the following statements:\n1. Under the India-US TRUST Initiative, India committed to invest in maintenance, repair, and financing of undersea cables in the Indian Ocean.\n2. At the 26th SCO Summit, Prime Minister Narendra Modi proposed a five-pillar cooperation framework.",
+        qT: "பின்வரும் கூற்றுகளைக் கவனியுங்கள்:\n1. இந்தியா-அமெரிக்கா டிரஸ்ட் முயற்சியின் கீழ் இந்தியப் பெருங்கடலில் கடலுக்கடியிலான கேபிள்களின் பராமரிப்பு மற்றும் நிதியுதவியில் முதலீடு செய்ய இந்தியா உறுதியளித்துள்ளது.\n2. 26வது எஸ்சிஓ உச்சிமாநாட்டில் பிரதமர் நரேந்திர மோடி ஐந்து தூண் ஒத்துழைப்புக் கட்டமைப்பை முன்மொழிந்தார்.",
+        oE: ["Only 1", "Only 2", "Both 1 and 2", "Neither 1 nor 2"],
+        oT: ["1 மட்டும்", "2 மட்டும்", "1 மற்றும் 2 இரண்டும்", "1 மற்றும் 2 இரண்டும் இல்லை"],
+        a: 0,
+        exp: "Statement 1 is correct. Statement 2 is incorrect because PM Modi proposed a Three-Pillar Framework: Security, Connectivity, and Opportunity."
+    },
+    // 88 (Nat/State/Intl - Ans: 1 - Only 2)
+    {
+        qE: "Consider the following statements:\n1. The 18th BRICS Summit 2026 featured imagery of the Brihadisvara Temple as its cultural backdrop.\n2. India co-hosted the launch of the 'OneSCD' Global Sickle Cell Partnership on the sidelines of the 81st UN General Assembly.",
+        qT: "பின்வரும் கூற்றுகளைக் கவனியுங்கள்:\n1. 18வது பிரிக்ஸ் உச்சிமாநாடு 2026-இன் கலாச்சாரப் பின்னணியாக பிரகதீஸ்வரர் கோயில் காட்சிப்படுத்தப்பட்டது.\n2. 81வது ஐ.நா பொதுச் சபையின் இடையே 'OneSCD' உலகளாவிய அரிவாள் செல் கூட்டாண்மையின் தொடக்கத்தை இந்தியா இணைந்து நடத்தியது.",
+        oE: ["Only 1", "Only 2", "Both 1 and 2", "Neither 1 nor 2"],
+        oT: ["1 மட்டும்", "2 மட்டும்", "1 மற்றும் 2 இரண்டும்", "1 மற்றும் 2 இரண்டும் இல்லை"],
+        a: 1,
+        exp: "Statement 1 is incorrect because BRICS leaders were greeted against imagery of the Ramanathaswamy Temple, Rameswaram. Statement 2 is correct."
+    },
+    // 89 (Nat/State/Intl - Ans: 1 - Only 2)
+    {
+        qE: "Consider the following statements:\n1. The Malayalam film 'Half' directed by Samjad PS won the Platform Prize at TIFF 2026.\n2. The BRICS Theatre Festival 2026 was organised in New Delhi under the theme 'Shared Stories, Shared Futures'.",
+        qT: "பின்வரும் கூற்றுகளைக் கவனியுங்கள்:\n1. சம்ஜத் பி.எஸ் இயக்கிய 'ஹாஃப்' மலையாளத் திரைப்படம் டொராண்டோ திரைப்பட விழா 2026-இல் பிளாட்ஃபார்ம் பரிசை வென்றது.\n2. பிரிக்ஸ் நாடகத் திருவிழா 2026 புதுடெல்லியில் 'பகிரப்பட்ட கதைகள், பகிரப்பட்ட எதிர்காலம்' என்ற கருப்பொருளில் நடத்தப்பட்டது.",
+        oE: ["Only 1", "Only 2", "Both 1 and 2", "Neither 1 nor 2"],
+        oT: ["1 மட்டும்", "2 மட்டும்", "1 மற்றும் 2 இரண்டும்", "1 மற்றும் 2 இரண்டும் இல்லை"],
+        a: 1,
+        exp: "Statement 1 is incorrect because 'Half' was the first Malayalam film screened in TIFF's Midnight Madness section ('Angh' won the Platform Prize). Statement 2 is correct."
+    },
+    // 90 (Nat/State/Intl - Ans: 0 - Only 1)
+    {
+        qE: "Consider the following statements:\n1. India's UNESCO World Heritage Tentative List reached 81 sites as of 28 September 2026.\n2. The GI-tagged Gulbarga Tur Dal exported to Maldives belongs to Maharashtra.",
+        qT: "பின்வரும் கூற்றுகளைக் கவனியுங்கள்:\n1. செப்டம்பர் 28, 2026 நிலவரப்படி இந்தியாவின் யுனெஸ்கோ உலகப் பாரம்பரிய தற்காலிகப் பட்டியல் 81 தளங்களை எட்டியது.\n2. மாலத்தீவுக்கு ஏற்றுமதி செய்யப்பட்ட புவிசார் குறியீடு பெற்ற குல்பர்கா துவரம் பருப்பு மகாராஷ்டிராவைச் சேர்ந்தது.",
+        oE: ["Only 1", "Only 2", "Both 1 and 2", "Neither 1 nor 2"],
+        oT: ["1 மட்டும்", "2 மட்டும்", "1 மற்றும் 2 இரண்டும்", "1 மற்றும் 2 இரண்டும் இல்லை"],
+        a: 0,
+        exp: "Statement 1 is correct. Statement 2 is incorrect because Gulbarga Tur Dal is a GI-tagged product of Karnataka."
+    },
+    // 91 (Def/SciTech/Env/Awards - Ans: 3 - Neither 1 nor 2)
+    {
+        qE: "Consider the following statements:\n1. The inaugural UNEP Cool Leaders Award 2026 was presented to India and Japan.\n2. Kishor Makwana, who received the Dr. APJ Abdul Kalam Jan Seva Puraskar 2026, is the Chairman of the National Commission for Scheduled Tribes.",
+        qT: "பின்வரும் கூற்றுகளைக் கவனியுங்கள்:\n1. தொடக்க UNEP கூல் லீடர்ஸ் விருது 2026 இந்தியா மற்றும் ஜப்பானுக்கு வழங்கப்பட்டது.\n2. டாக்டர் ஏ.பி.ஜே. அப்துல் கலாம் ஜன சேவா புரஸ்கார் 2026 பெற்ற கிஷோர் மக்வானா தேசிய பழங்குடியினர் ஆணையத்தின் தலைவராவார்.",
+        oE: ["Only 1", "Only 2", "Both 1 and 2", "Neither 1 nor 2"],
+        oT: ["1 மட்டும்", "2 மட்டும்", "1 மற்றும் 2 இரண்டும்", "1 மற்றும் 2 இரண்டும் இல்லை"],
+        a: 3,
+        exp: "Both statements are incorrect. The inaugural Cool Leaders Award went to Singapore and the UAE, and Kishor Makwana is Chairman of the National Commission for Scheduled Castes (NCSC)."
+    },
+    // 92 (Def/SciTech/Env/Awards - Ans: 2 - Both 1 and 2)
+    {
+        qE: "Consider the following statements:\n1. At the Rajbhasha Awards 2025–26, the Ministry of Defence won First Prize in the >300 personnel category.\n2. Mammootty and Kartik Aaryan shared the Best Actor in a Leading Role award at the 72nd National Film Awards.",
+        qT: "பின்வரும் கூற்றுகளைக் கவனியுங்கள்:\n1. ராஜ்பாஷா விருதுகள் 2025–26-இல் 300-க்கும் மேற்பட்ட பணியாளர்கள் பிரிவில் பாதுகாப்பு அமைச்சகம் முதல் பரிசை வென்றது.\n2. 72வது தேசிய திரைப்பட விருதுகளில் மம்மூட்டி மற்றும் கார்த்திக் ஆர்யன் சிறந்த நடிகர் விருதைப் பகிர்ந்து கொண்டனர்.",
+        oE: ["Only 1", "Only 2", "Both 1 and 2", "Neither 1 nor 2"],
+        oT: ["1 மட்டும்", "2 மட்டும்", "1 மற்றும் 2 இரண்டும்", "1 மற்றும் 2 இரண்டும் இல்லை"],
+        a: 2,
+        exp: "Both statements are correct."
+    },
+    // 93 (Def/SciTech/Env/Awards - Ans: 3 - Neither 1 nor 2)
+    {
+        qE: "Consider the following statements:\n1. The AASHVAST Drone Security Lab was established by the Indian Air Force in Bengaluru.\n2. The VAMPIRE counter-unmanned system selected by the U.S. Navy was developed by Lockheed Martin.",
+        qT: "பின்வரும் கூற்றுகளைக் கவனியுங்கள்:\n1. ஆஷ்வாஸ்ட் ட்ரோன் பாதுகாப்பு ஆய்வகம் இந்திய விமானப்படையால் பெங்களூருவில் நிறுவப்பட்டது.\n2. அமெரிக்க கடற்படையால் தேர்ந்தெடுக்கப்பட்ட VAMPIRE ஆளில்லா விமான எதிர்ப்பு அமைப்பு லாக்ஹீட் மார்ட்டினால் உருவாக்கப்பட்டது.",
+        oE: ["Only 1", "Only 2", "Both 1 and 2", "Neither 1 nor 2"],
+        oT: ["1 மட்டும்", "2 மட்டும்", "1 மற்றும் 2 இரண்டும்", "1 மற்றும் 2 இரண்டும் இல்லை"],
+        a: 3,
+        exp: "Both statements are incorrect. AASHVAST was established by the Indian Army (DG EME) in New Delhi, and VAMPIRE was developed by L3Harris Technologies."
+    },
+    // 94 (Def/SciTech/Env/Awards - Ans: 1 - Only 2)
+    {
+        qE: "Consider the following statements:\n1. The 13th edition of SLINEX-26 was held in Colombo, Sri Lanka.\n2. IAF's Sarang Helicopter Display Team operates indigenous ALH Dhruv helicopters and participated in the 2nd El Alamein International Airshow in Egypt.",
+        qT: "பின்வரும் கூற்றுகளைக் கவனியுங்கள்:\n1. SLINEX-26 பயிற்சியின் 13வது பதிப்பு இலங்கையின் கொழும்பில் நடைபெற்றது.\n2. இந்திய விமானப்படையின் சாரங் குழு உள்நாட்டு ALH துருவ் ஹெலிகாப்டர்களை இயக்குகிறது மற்றும் எகிப்தின் 2வது எல் அலமைன் விமானக் கண்காட்சியில் பங்கேற்றது.",
+        oE: ["Only 1", "Only 2", "Both 1 and 2", "Neither 1 nor 2"],
+        oT: ["1 மட்டும்", "2 மட்டும்", "1 மற்றும் 2 இரண்டும்", "1 மற்றும் 2 இரண்டும் இல்லை"],
+        a: 1,
+        exp: "Statement 1 is incorrect because SLINEX-26 was held in Visakhapatnam. Statement 2 is correct."
+    },
+    // 95 (Def/SciTech/Env/Awards - Ans: 2 - Both 1 and 2)
+    {
+        qE: "Consider the following statements:\n1. Under Article 10 of the 1991 India-Pakistan agreement, naval vessels of both countries must maintain at least 3 nautical miles separation in international waters.\n2. BRO's Project Vijayak primarily operates across Kargil and Ladakh.",
+        qT: "பின்வரும் கூற்றுகளைக் கவனியுங்கள்:\n1. 1991 இந்தியா-பாகிஸ்தான் ஒப்பந்தத்தின் பிரிவு 10-இன் கீழ் இரு நாட்டு கடற்படைக் கப்பல்களும் சர்வதேச கடலில் குறைந்தபட்சம் 3 கடல் மைல் இடைவெளியைப் பராமரிக்க வேண்டும்.\n2. BRO-வின் விஜயக் திட்டம் முதன்மையாக கார்கில் மற்றும் லடாக் பகுதிகளில் செயல்படுகிறது.",
+        oE: ["Only 1", "Only 2", "Both 1 and 2", "Neither 1 nor 2"],
+        oT: ["1 மட்டும்", "2 மட்டும்", "1 மற்றும் 2 இரண்டும்", "1 மற்றும் 2 இரண்டும் இல்லை"],
+        a: 2,
+        exp: "Both statements are correct."
+    },
+    // 96 (Def/SciTech/Env/Awards - Ans: 0 - Only 1)
+    {
+        qE: "Consider the following statements:\n1. The U.S. FDA granted accelerated approval to AstraZeneca's Etcamah (camizestrant) for breast cancer.\n2. The OPU-IVF Badri calf born in September 2026 belongs to the state animal breed of Himachal Pradesh.",
+        qT: "பின்வரும் கூற்றுகளைக் கவனியுங்கள்:\n1. மார்பகப் புற்றுநோய்க்கான அஸ்ட்ராஜெனெகாவின் எட்காமா மருந்துக்கு அமெரிக்க FDA துரித ஒப்புதல் அளித்துள்ளது.\n2. செப்டம்பர் 2026-இல் பிறந்த OPU-IVF பத்ரி கன்று இமாச்சலப் பிரதேசத்தின் மாநில விலங்கு இனத்தைச் சேர்ந்தது.",
+        oE: ["Only 1", "Only 2", "Both 1 and 2", "Neither 1 nor 2"],
+        oT: ["1 மட்டும்", "2 மட்டும்", "1 மற்றும் 2 இரண்டும்", "1 மற்றும் 2 இரண்டும் இல்லை"],
+        a: 0,
+        exp: "Statement 1 is correct. Statement 2 is incorrect because Badri is an indigenous cattle breed and recognised state animal of Uttarakhand."
+    },
+    // 97 (Def/SciTech/Env/Awards - Ans: 0 - Only 1)
+    {
+        qE: "Consider the following statements:\n1. NIELIT collaborated with Intel India to launch Agentic AI Skilling Programmes in September 2026.\n2. OpenAI's GPT-6 Astra model was designed exclusively for single-prompt text replies without multi-step workflows.",
+        qT: "பின்வரும் கூற்றுகளைக் கவனியுங்கள்:\n1. செப்டம்பர் 2026-இல் ஏஜென்டிக் AI திறன் திட்டங்களைத் தொடங்க NIELIT இன்டெல் இந்தியாவுடன் இணைந்தது.\n2. ஓபன்ஏஐ-யின் GPT-6 அஸ்ட்ரா மாதிரி பல-படி பணிப்பாய்வுகள் இன்றி ஒற்றை உரை பதில்களுக்காக மட்டுமே வடிவமைக்கப்பட்டது.",
+        oE: ["Only 1", "Only 2", "Both 1 and 2", "Neither 1 nor 2"],
+        oT: ["1 மட்டும்", "2 மட்டும்", "1 மற்றும் 2 இரண்டும்", "1 மற்றும் 2 இரண்டும் இல்லை"],
+        a: 0,
+        exp: "Statement 1 is correct. Statement 2 is incorrect because GPT-6 Astra's key feature is carrying out complex multi-step workflows and end-to-end computer work."
+    },
+    // 98 (Def/SciTech/Env/Awards - Ans: 2 - Both 1 and 2)
+    {
+        qE: "Consider the following statements:\n1. The 4th UNFCCC Climate Week was held in Baku, Azerbaijan ahead of COP31 in Antalya, Türkiye.\n2. The WWF Global Conservation Conference 2026 was inaugurated in Jaipur, Rajasthan.",
+        qT: "பின்வரும் கூற்றுகளைக் கவனியுங்கள்:\n1. துருக்கியின் அன்டால்யாவில் நடைபெறவுள்ள COP31 மாநாட்டிற்கு முன்னதாக 4வது UNFCCC காலநிலை வாரம் அஜர்பைஜானின் பாகுவில் நடைபெற்றது.\n2. 2026 WWF உலகளாவிய பாதுகாப்பு மாநாடு ராஜஸ்தானின் ஜெய்ப்பூரில் தொடங்கி வைக்கப்பட்டது.",
+        oE: ["Only 1", "Only 2", "Both 1 and 2", "Neither 1 nor 2"],
+        oT: ["1 மட்டும்", "2 மட்டும்", "1 மற்றும் 2 இரண்டும்", "1 மற்றும் 2 இரண்டும் இல்லை"],
+        a: 2,
+        exp: "Both statements are correct."
+    },
+    // 99 (Def/SciTech/Env/Awards - Ans: 3 - Neither 1 nor 2)
+    {
+        qE: "Consider the following statements:\n1. The 70th meeting of the International Whaling Commission (IWC70) was held in Tokyo, Japan.\n2. Typhoon Dujuan passed close to Hawaii and disrupted power supply there.",
+        qT: "பின்வரும் கூற்றுகளைக் கவனியுங்கள்:\n1. சர்வதேச திமிங்கல ஆணையத்தின் 70வது கூட்டம் ஜப்பானின் டோக்கியோவில் நடைபெற்றது.\n2. டுஜுவான் புயல் ஹவாய்க்கு அருகில் கடந்து சென்று அங்கு மின்சார விநியோகத்தைத் துண்டித்தது.",
+        oE: ["Only 1", "Only 2", "Both 1 and 2", "Neither 1 nor 2"],
+        oT: ["1 மட்டும்", "2 மட்டும்", "1 மற்றும் 2 இரண்டும்", "1 மற்றும் 2 இரண்டும் இல்லை"],
+        a: 3,
+        exp: "Both statements are incorrect. IWC70 was held in Hobart, Australia, and Typhoon Dujuan struck Japan (Hurricane Lowell passed near Hawaii)."
+    },
+    // 100 (Def/SciTech/Env/Awards - Ans: 1 - Only 2)
+    {
+        qE: "Consider the following statements:\n1. The UN Political Declaration on Sea-Level Rise was adopted during the 79th UN General Assembly.\n2. On NDMA's 22nd Formation Day, Aapda Mitra Portal 2.0 and Aapda Mitra Connect Mobile App were launched.",
+        qT: "பின்வரும் கூற்றுகளைக் கவனியுங்கள்:\n1. கடல் மட்ட உயர்வு குறித்த ஐ.நா அரசியல் பிரகடனம் 79வது ஐ.நா பொதுச் சபையின் போது ஏற்றுக்கொள்ளப்பட்டது.\n2. NDMA-வின் 22வது நிறுவன தினத்தில் ஆப்தா மித்ரா போர்ட்டல் 2.0 மற்றும் ஆப்தா மித்ரா கனெக்ட் செயலி தொடங்கப்பட்டன.",
+        oE: ["Only 1", "Only 2", "Both 1 and 2", "Neither 1 nor 2"],
+        oT: ["1 மட்டும்", "2 மட்டும்", "1 மற்றும் 2 இரண்டும்", "1 மற்றும் 2 இரண்டும் இல்லை"],
+        a: 1,
+        exp: "Statement 1 is incorrect because it was adopted during the 81st UN General Assembly on 24 September 2026. Statement 2 is correct."
+    }
+];
+let quizData = [];
+let currentQ = 0;
+let answers = [];
+let status = []; // 0: Not Visited, 1: Not Answered, 2: Answered, 3: Marked, 4: Answered & Marked
+
+// Shuffle array algorithm
+function shuffleArray(array) {
+    let shuffled = array.slice();
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+// Switch Views
+function switchView(viewId) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById(viewId).classList.add('active');
+}
+
+function startQuiz() {
+    quizData = shuffleArray(baseQuizData);
+   answers = new Array(quizData.length).fill(null);
+   status = new Array(quizData.length).fill(0);
+    
+    switchView('view-quiz');
+    
+    buildPalette();
+    loadQuestion(0);
+    startTimer();
+    
+    if(window.innerWidth <= 768) {
+        document.getElementById('close-palette-btn').style.display = 'block';
+    }
+}
+
+function buildPalette() {
+    const grid = document.getElementById('palette-grid');
+    grid.innerHTML = '';
+    for(let i=0; i<quizData.length; i++) {
+        let bubble = document.createElement('div');
+        bubble.className = 'q-bubble status-' + status[i];
+        bubble.innerText = (i+1);
+        bubble.id = 'pb-' + i;
+        bubble.onclick = () => jumpToQuestion(i);
+        grid.appendChild(bubble);
+    }
+}
+
+function syncAnswer() {
+    let selected = document.querySelector('input[name="opt"]:checked');
+    if(selected) {
+        answers[currentQ] = parseInt(selected.value);
+    } else {
+        answers[currentQ] = null;
+    }
+}
+
+function updatePaletteCSS() {
+    for(let i=0; i<quizData.length; i++) {
+        let bubble = document.getElementById('pb-' + i);
+        bubble.className = 'q-bubble status-' + status[i];
+        if(i === currentQ) bubble.classList.add('active');
+    }
+}
+
+function loadQuestion(index) {
+    if(status[currentQ] === 0) {
+        status[currentQ] = (answers[currentQ] !== null) ? 2 : 1;
+    }
+    
+    currentQ = index;
+    if(status[currentQ] === 0) status[currentQ] = 1;
+
+    document.getElementById('q-no').innerText = "Question " + (currentQ + 1);
+    
+    // Format statement questions with line breaks
+    let qTextEn = quizData[currentQ].qE.replace(/\n/g, "<br>");
+    let qTextTa = quizData[currentQ].qT.replace(/\n/g, "<br>");
+    
+    document.getElementById('q-text-en').innerHTML = qTextEn;
+    document.getElementById('q-text-ta').innerHTML = qTextTa;
+
+    let optHtml = '';
+    for(let i=0; i<4; i++) {
+        let checked = (answers[currentQ] === i) ? 'checked' : '';
+        optHtml += `
+            <label class="option-label">
+                <input type="radio" name="opt" value="${i}" ${checked} onchange="syncAnswer()">
+                <div>
+                    <div>${quizData[currentQ].oE[i]}</div>
+                    <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 4px;">${quizData[currentQ].oT[i]}</div>
+                </div>
+            </label>
+        `;
+    }
+    document.getElementById('options-container').innerHTML = optHtml;
+    
+    // Clear scroll position to top of container when moving to a new question
+    document.querySelector('.question-scroll-area').scrollTop = 0;
+    
+    updatePaletteCSS();
+}
+
+function jumpToQuestion(i) {
+    syncAnswer();
+    loadQuestion(i);
+    if(window.innerWidth <= 768) togglePalette();
+}
+
+function saveAndNext() {
+    syncAnswer();
+    status[currentQ] = (answers[currentQ] !== null) ? 2 : 1;
+    if(currentQ < quizData.length - 1) loadQuestion(currentQ + 1);
+    else updatePaletteCSS();
+}
+
+function markAndNext() {
+    syncAnswer();
+    status[currentQ] = (answers[currentQ] !== null) ? 4 : 3;
+    if(currentQ < quizData.length - 1) loadQuestion(currentQ + 1);
+    else updatePaletteCSS();
+}
+
+function clearResponse() {
+    answers[currentQ] = null;
+    status[currentQ] = 1;
+    loadQuestion(currentQ);
+}
+
+function prevQuestion() {
+    syncAnswer();
+    if(currentQ > 0) loadQuestion(currentQ - 1);
+}
+
+function togglePalette() {
+    document.getElementById('palette').classList.toggle('open');
+}
+
+// Timer Logic
+let timeLimit = 30 * 60; // 15 mins
+let timerInterval;
+
+function startTimer() {
+    timerInterval = setInterval(() => {
+        timeLimit--;
+        let m = Math.floor(timeLimit / 60).toString().padStart(2, '0');
+        let s = (timeLimit % 60).toString().padStart(2, '0');
+        document.getElementById('timer').innerText = m + ':' + s;
+        if(timeLimit <= 0) {
+            clearInterval(timerInterval);
+            submitExam();
+        }
+    }, 1000);
+}
+
+// Custom Submit Modals
+function showSubmitConfirm() {
+    syncAnswer();
+    let unattempted = answers.filter(a => a === null).length;
+    let warningTxt = document.getElementById('unanswered-warning');
+    if(unattempted > 0) {
+        warningTxt.innerText = `You have ${unattempted} unattempted questions!`;
+        warningTxt.style.display = 'block';
+    } else {
+        warningTxt.style.display = 'none';
+    }
+    document.getElementById('confirm-modal').style.display = 'flex';
+}
+
+function closeSubmitConfirm() {
+    document.getElementById('confirm-modal').style.display = 'none';
+}
+
+function submitExam() {
+    clearInterval(timerInterval);
+    document.getElementById('confirm-modal').style.display = 'none';
+    syncAnswer();
+    
+    let correct = 0, wrong = 0, unattempted = 0;
+    
+    quizData.forEach((q, i) => {
+        if(answers[i] === null) unattempted++;
+        else if(answers[i] === q.a) correct++;
+        else wrong++;
+    });
+    
+    let score = correct - (wrong * 0.3333);
+    
+    document.getElementById('res-score').innerText = score.toFixed(2);
+    document.getElementById('res-correct').innerText = correct;
+    document.getElementById('res-wrong').innerText = wrong;
+    document.getElementById('res-unattempted').innerText = unattempted;
+    document.getElementById('out-of-text').innerText = `(Out of ${quizData.length})`;
+    switchView('view-results');
+}
+
+// Detailed Review with Tabs
+function showDetailedReview() {
+    let htmlCorrect = '';
+    let htmlWrong = '';
+    let htmlUnattempted = '';
+    
+    quizData.forEach((q, i) => {
+        let isAttempted = answers[i] !== null;
+        let isCorrect = isAttempted && answers[i] === q.a;
+        let cssClass = !isAttempted ? 'unattempted' : (isCorrect ? 'correct' : 'wrong');
+        
+        let chosenText = isAttempted ? q.oE[answers[i]] : "None";
+        let correctText = q.oE[q.a];
+        
+        let qText = q.qE.replace(/\n/g, "<br>");
+        let tagHtml = !isAttempted ? `<span class="answer-tag tag-unattempted">Unattempted</span>` : 
+                      isCorrect ? `<span class="answer-tag tag-correct">Correct (+1.0)</span>` : 
+                      `<span class="answer-tag tag-wrong">Incorrect (-0.33)</span>`;
+                      
+        let explanationText = q.exp || `The correct answer is ${correctText}.`;
+        
+        let itemHtml = `
+            <div class="review-item ${cssClass}">
+                <strong style="font-size: 1.1rem; color: #fff;">Q${i+1}: ${qText}</strong><br>
+                ${tagHtml}
+                <div style="margin-top: 15px; font-size: 0.95rem; display: grid; gap: 8px;">
+                    <div><span style="color: var(--text-secondary)">Your Answer:</span> <span style="color: ${!isAttempted ? '#9e9e9e' : isCorrect ? 'var(--color-answered)' : 'var(--color-not-answered)'}">${chosenText}</span></div>
+                    <div><span style="color: var(--text-secondary)">Correct Answer:</span> <span style="color: var(--color-answered); font-weight: bold;">${correctText}</span></div>
+                </div>
+                <div class="explanation-box">
+                    <strong style="color: var(--primary-cyan);">Explanation:</strong><br>
+                    ${explanationText}
+                </div>
+            </div>
+        `;
+        
+        if (!isAttempted) htmlUnattempted += itemHtml;
+        else if (isCorrect) htmlCorrect += itemHtml;
+        else htmlWrong += itemHtml;
+    });
+    
+    // Inject Content
+    document.getElementById('review-content-correct').innerHTML = htmlCorrect || "<div style='text-align:center; padding: 30px; color: var(--text-secondary);'>No correct answers recorded in this session.</div>";
+    document.getElementById('review-content-wrong').innerHTML = htmlWrong || "<div style='text-align:center; padding: 30px; color: var(--color-answered); font-weight: bold;'>Amazing job! You had no incorrect answers!</div>";
+    document.getElementById('review-content-unattempted').innerHTML = htmlUnattempted || "<div style='text-align:center; padding: 30px; color: var(--text-secondary);'>You attempted every single question. Great effort!</div>";
+    
+    // Setup Tab counts
+    document.getElementById('tab-count-correct').innerText = document.getElementById('res-correct').innerText;
+    document.getElementById('tab-count-wrong').innerText = document.getElementById('res-wrong').innerText;
+    document.getElementById('tab-count-unattempted').innerText = document.getElementById('res-unattempted').innerText;
+    
+    // Display Section
+    document.getElementById('post-exam-actions').style.display = 'none';
+    document.getElementById('detailed-review-section').style.display = 'block';
+    
+    // Default to the first tab that has data
+    if (htmlWrong) switchTab('wrong');
+    else if (htmlCorrect) switchTab('correct');
+    else switchTab('unattempted');
+}
+
+function switchTab(tabId) {
+    // Reset buttons and content visibility
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    
+    // Activate chosen tab
+    document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
+    document.getElementById(`review-content-${tabId}`).classList.add('active');
+}
+</script>
+</body>
+</html>
